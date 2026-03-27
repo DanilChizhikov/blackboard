@@ -6,8 +6,8 @@ namespace DTech.Blackboard
 {
     internal sealed class BlackboardVariableHolder : IDisposable
     {
-        private readonly Dictionary<string, SerializableGuid> _nameToGuid = new();
-        private readonly Dictionary<SerializableGuid, BlackboardVariable> _guidToVariable = new();
+        private readonly Dictionary<string, SerializableGuid> _nameToGuid;
+        private readonly Dictionary<SerializableGuid, BlackboardVariable> _guidToVariable;
         
         public BlackboardVariable this[string name]
         {
@@ -32,6 +32,28 @@ namespace DTech.Blackboard
                 }
 
                 return variable;
+            }
+        }
+
+        public BlackboardVariableHolder()
+        {
+            _nameToGuid = new Dictionary<string, SerializableGuid>();
+            _guidToVariable = new Dictionary<SerializableGuid, BlackboardVariable>();
+        }
+
+        public BlackboardVariableHolder(int capacity)
+        {
+            _nameToGuid = new Dictionary<string, SerializableGuid>(capacity);
+            _guidToVariable = new Dictionary<SerializableGuid, BlackboardVariable>(capacity);
+        }
+
+        public BlackboardVariableHolder(IEnumerable<BlackboardVariable> variables)
+        {
+            _nameToGuid = new Dictionary<string, SerializableGuid>();
+            _guidToVariable = new Dictionary<SerializableGuid, BlackboardVariable>();
+            foreach (BlackboardVariable variable in variables)
+            {
+                Add(variable);
             }
         }
 
