@@ -1,0 +1,27 @@
+{
+    "name": "com.dtech.blackboard",
+    "displayName": "Blackboard",
+    "version": "0.0.1",
+    "unity": "2022.3",
+    "description": "",
+    "changelogUrl": "https://github.com/DanilChizhikov/blackboard/releases/tag/v0.0.1",
+    "documentationUrl": "https://github.com/DanilChizhikov/blackboard/",
+    "keywords": [
+        "behaviour",
+        "utility system",
+        "state machine",
+        "blackboard"
+    ],
+    "category": "Tools",
+    "author": "DTech",
+    "repository": {
+        "type": "git",
+        "url": "ssh://github.com:DanilChizhikov/blackboard.git",
+        "directory": "com.dtech"
+    },
+    "publishConfig": {
+        "registry": "https://npm.pkg.github.com/@DanilChizhikov"
+    },
+    "license": "MIT",
+    "readme": "README.md"
+}
