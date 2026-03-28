@@ -14,7 +14,7 @@ namespace DTech.Blackboard.Editor
 		public abstract float GetPropertyHeight(SerializedProperty property);
 	}
 
-	public sealed class BlackboardVariableDrawer<T> : BlackboardVariableDrawer
+	public class BlackboardVariableDrawer<T> : BlackboardVariableDrawer
 	{
 		private const string GuidPropertyName = "_guid";
 		private const string NamePropertyName = "_name";
