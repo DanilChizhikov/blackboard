@@ -1,6 +1,5 @@
 # Blackboard
 [![Unity Version](https://img.shields.io/badge/unity-6000.0+-000.svg)](https://unity3d.com/get-unity/download/archive)
-![Unity Tests](https://github.com/DanilChizhikov/blackboard/actions/workflows/tests.yml/badge.svg?branch=master)
 
 ## Overview
 Blackboard is a lightweight typed key-value container for Unity gameplay systems.
