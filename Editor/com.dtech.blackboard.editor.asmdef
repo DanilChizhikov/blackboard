@@ -1,0 +1,18 @@
+{
+    "name": "com.dtech.blackboard.editor",
+    "rootNamespace": "DTech",
+    "references": [
+        "GUID:580d36e73d314e36bf83eeb9707ec431"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
