@@ -28,7 +28,7 @@ jobs:
         run: |
           git clone https://DanilChizhikov:${{ secrets.PRIVATE_REPO_TOKEN }}@github.com/DanilChizhikov/empty-unity-project.git empty-unity-project
 
-      - name: Copy logging source into Unity project
+      - name: Copy source into Unity project
         run: |
           mkdir -p ${{ matrix.projectPath }}/Assets/blackboard
 
