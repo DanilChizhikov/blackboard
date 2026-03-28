@@ -40,12 +40,16 @@ namespace DTech.Blackboard
             return instance;
         }
         
+        public abstract void SetObjectValueWithoutNotif(object value);
+        
         public abstract BlackboardVariable Clone();
     }
 
     [Serializable]
     public class BlackboardVariable<T> : BlackboardVariable
     {
+        public event Action<SerializableGuid, T> OnValueChanged; 
+        
         [SerializeField]
         private T _value;
         
@@ -53,16 +57,41 @@ namespace DTech.Blackboard
 
         public override object ObjectValue
         {
-            get => _value;
-            set => _value = (T)value;
+            get => Value;
+            set => Value = (T)value;
         }
 
-        public T Value
+        public virtual T Value
         {
             get => _value;
-            set => _value = value;
+
+            set
+            {
+                if (_value.Equals(value))
+                {
+                    return;
+                }
+                
+                _value = value;
+                OnValueChanged?.Invoke(Guid, value);
+            }
+        }
+
+        public override void SetObjectValueWithoutNotif(object value)
+        {
+            SetValueWithoutNotif((T)value);
         }
         
+        public virtual void SetValueWithoutNotif(T value)
+        {
+            if (_value.Equals(value))
+            {
+                return;
+            }
+            
+            _value = value;
+        }
+
         public override BlackboardVariable Clone()
         {
             return new BlackboardVariable<T>

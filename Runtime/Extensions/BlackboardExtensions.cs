@@ -108,6 +108,19 @@ namespace DTech.Blackboard
 		}
 		
 		/// <summary>
+		/// Sets the value of a typed variable by name, without notification.
+		/// </summary>
+		/// <typeparam name="T">The value type.</typeparam>
+		/// <param name="blackboard">The blackboard containing the variable.</param>
+		/// <param name="name">The variable name.</param>
+		/// <param name="value">The value to set.</param>
+		public static void SetValueWithoutNotif<T>(this Blackboard blackboard, string name, T value)
+		{
+			BlackboardVariable<T> variable = blackboard.GetVariable<T>(name);
+			variable.SetValueWithoutNotif(value);
+		}
+		
+		/// <summary>
 		/// Sets the value of a typed variable by GUID.
 		/// </summary>
 		/// <typeparam name="T">The value type.</typeparam>
@@ -118,6 +131,19 @@ namespace DTech.Blackboard
 		{
 			BlackboardVariable<T> variable = blackboard.GetVariable<T>(guid);
 			variable.Value = value;
+		}
+		
+		/// <summary>
+		/// Sets the value of a typed variable by GUID, without notification.
+		/// </summary>
+		/// <typeparam name="T">The value type.</typeparam>
+		/// <param name="blackboard">The blackboard containing the variable.</param>
+		/// <param name="guid">The variable GUID.</param>
+		/// <param name="value">The value to set.</param>
+		public static void SetValueWithoutNotif<T>(this Blackboard blackboard, SerializableGuid guid, T value)
+		{
+			BlackboardVariable<T> variable = blackboard.GetVariable<T>(guid);
+			variable.SetValueWithoutNotif(value);
 		}
 	}
 }

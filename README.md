@@ -153,8 +153,8 @@ public static class BlackboardAssetExample
         var asset = ScriptableObject.CreateInstance<BlackboardAsset>();
 
 #if UNITY_EDITOR
-        asset.AddVariable("Health", 100);
-        asset.AddVariable("PlayerName", "Rogue");
+        asset.AddVariable("Health", typeof(int));
+        asset.AddVariable("PlayerName", typeof(string));
 #endif
 
         return asset.ToRuntimeBlackboard();
@@ -247,7 +247,7 @@ Editor-only partial API:
 public sealed partial class BlackboardAsset
 {
     public IReadOnlyList<BlackboardVariable> Variables { get; }
-    public SerializableGuid AddVariable(string variableName, object value);
+    public SerializableGuid AddVariable(string variableName, Type valueType);
     public bool RemoveVariable(string variableName);
 }
 #endif
