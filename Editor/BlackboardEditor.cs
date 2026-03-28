@@ -35,11 +35,12 @@ namespace DTech.Blackboard.Editor
 				using (new EditorGUI.DisabledGroupScope(!hasOption))
 				{
 					_variableName = EditorGUILayout.TextField("Name", _variableName);
-					using (new EditorGUI.DisabledGroupScope(!hasOption || !IsValidVariableName(_variableName)))
+					bool isValidVariableName = IsValidVariableName(_variableName, out string normalizedVariableName);
+					using (new EditorGUI.DisabledGroupScope(!hasOption || !isValidVariableName))
 					{
 						if (GUILayout.Button("Add"))
 						{
-							_listDrawProvider.Add(_variableName, _selectedVariableOption.Type.Type);
+							_listDrawProvider.Add(normalizedVariableName, _selectedVariableOption.Type.Type);
 							_selectedVariableOption = null;
 							_variableName = string.Empty;
 						}
@@ -50,22 +51,14 @@ namespace DTech.Blackboard.Editor
 			serializedObject.ApplyModifiedProperties();
 		}
 
-		private bool IsValidVariableName(string variableName)
+		private bool IsValidVariableName(string variableName, out string normalizedVariableName)
 		{
-			if (string.IsNullOrEmpty(variableName))
-			{
-				return false;
-			}
-
-			foreach (BlackboardVariable variable in _blackboardAsset.Variables)
-			{
-				if (variable.Name == _variableName)
-				{
-					return false;
-				}
-			}
-
-			return true;
+			return BlackboardVariableNameValidator.TryValidate(
+				_blackboardAsset.Variables,
+				variableName,
+				null,
+				out normalizedVariableName,
+				out _);
 		}
 
 		private void OnEnable()

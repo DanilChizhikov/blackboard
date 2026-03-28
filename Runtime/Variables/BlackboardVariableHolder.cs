@@ -39,19 +39,19 @@ namespace DTech.Blackboard
 
         public BlackboardVariableHolder()
         {
-            _nameToGuid = new Dictionary<string, SerializableGuid>();
+            _nameToGuid = new Dictionary<string, SerializableGuid>(StringComparer.OrdinalIgnoreCase);
             _guidToVariable = new Dictionary<SerializableGuid, BlackboardVariable>();
         }
 
         public BlackboardVariableHolder(int capacity)
         {
-            _nameToGuid = new Dictionary<string, SerializableGuid>(capacity);
+            _nameToGuid = new Dictionary<string, SerializableGuid>(capacity, StringComparer.OrdinalIgnoreCase);
             _guidToVariable = new Dictionary<SerializableGuid, BlackboardVariable>(capacity);
         }
 
         public BlackboardVariableHolder(IEnumerable<BlackboardVariable> variables)
         {
-            _nameToGuid = new Dictionary<string, SerializableGuid>();
+            _nameToGuid = new Dictionary<string, SerializableGuid>(StringComparer.OrdinalIgnoreCase);
             _guidToVariable = new Dictionary<SerializableGuid, BlackboardVariable>();
             foreach (BlackboardVariable variable in variables)
             {
@@ -61,7 +61,13 @@ namespace DTech.Blackboard
 
         public bool Contains(string name)
         {
-            if (!_nameToGuid.TryGetValue(name, out SerializableGuid guid))
+            string normalizedName = BlackboardVariableNameValidator.Normalize(name);
+            if (string.IsNullOrWhiteSpace(normalizedName))
+            {
+                return false;
+            }
+
+            if (!_nameToGuid.TryGetValue(normalizedName, out SerializableGuid guid))
             {
                 return false;
             }
@@ -71,13 +77,19 @@ namespace DTech.Blackboard
         
         public void Add(BlackboardVariable variable)
         {
-            if (Contains(variable.Name))
+            if (variable == null)
             {
-                Debug.LogError($"{nameof(BlackboardVariableHolder)}.{nameof(Add)}: Variable with name '{variable.Name}' already exists");
+                Debug.LogError($"{nameof(BlackboardVariableHolder)}.{nameof(Add)}: Variable cannot be null");
+                return;
+            }
+
+            if (!TryValidateName(variable.Name, null, out string normalizedName, out string errorMessage))
+            {
+                Debug.LogError($"{nameof(BlackboardVariableHolder)}.{nameof(Add)}: {errorMessage}");
                 return;
             }
             
-            _nameToGuid.Add(variable.Name, variable.Guid);
+            _nameToGuid.Add(normalizedName, variable.Guid);
             _guidToVariable.Add(variable.Guid, variable);
         }
 
@@ -89,7 +101,7 @@ namespace DTech.Blackboard
                 return false;
             }
 
-            if (from.Name != to.Name)
+            if (!BlackboardVariableNameValidator.EqualsByPolicy(from.Name, to.Name))
             {
                 Debug.LogError($"{nameof(BlackboardVariableHolder)}.{nameof(Replace)}: Variable with name '{from.Name}' cannot be replaced with '{to.Name}'");
                 return false;
@@ -109,7 +121,7 @@ namespace DTech.Blackboard
                 return false;
             }
 
-            if (from.Name != to.Name)
+            if (!BlackboardVariableNameValidator.EqualsByPolicy(from.Name, to.Name))
             {
                 Debug.LogError($"{nameof(BlackboardVariableHolder)}.{nameof(Replace)}: Variable with name '{from.Name}' cannot be replaced with '{to.Name}'");
                 return false;
@@ -134,7 +146,13 @@ namespace DTech.Blackboard
         public bool Remove(string name, out BlackboardVariable variable)
         {
             variable = null;
-            if (!_nameToGuid.TryGetValue(name, out SerializableGuid guid))
+            string normalizedName = BlackboardVariableNameValidator.Normalize(name);
+            if (string.IsNullOrWhiteSpace(normalizedName))
+            {
+                return false;
+            }
+
+            if (!_nameToGuid.TryGetValue(normalizedName, out SerializableGuid guid))
             {
                 return false;
             }
@@ -147,7 +165,7 @@ namespace DTech.Blackboard
             bool result = _guidToVariable.Remove(guid, out variable);
             if (result)
             {
-                _nameToGuid.Remove(variable.Name);
+                _nameToGuid.Remove(BlackboardVariableNameValidator.Normalize(variable.Name));
             }
             
             return result;
@@ -156,7 +174,13 @@ namespace DTech.Blackboard
         public bool TryGetVariable(string name, out BlackboardVariable variable)
         {
             variable = null;
-            if (!_nameToGuid.TryGetValue(name, out SerializableGuid guid))
+            string normalizedName = BlackboardVariableNameValidator.Normalize(name);
+            if (string.IsNullOrWhiteSpace(normalizedName))
+            {
+                return false;
+            }
+
+            if (!_nameToGuid.TryGetValue(normalizedName, out SerializableGuid guid))
             {
                 return false;
             }
@@ -191,6 +215,33 @@ namespace DTech.Blackboard
         {
             _nameToGuid.Clear();
             _guidToVariable.Clear();
+        }
+
+        private bool TryValidateName(
+            string variableName,
+            SerializableGuid? excludedGuid,
+            out string normalizedName,
+            out string errorMessage)
+        {
+            normalizedName = BlackboardVariableNameValidator.Normalize(variableName);
+            if (string.IsNullOrWhiteSpace(normalizedName))
+            {
+                errorMessage = "Variable name cannot be empty.";
+                return false;
+            }
+
+            if (_nameToGuid.TryGetValue(normalizedName, out SerializableGuid guid))
+            {
+                if (!excludedGuid.HasValue || guid != excludedGuid.Value)
+                {
+                    BlackboardVariable conflictVariable = _guidToVariable[guid];
+                    errorMessage = $"Variable name '{normalizedName}' is already used by '{conflictVariable.Name}'.";
+                    return false;
+                }
+            }
+
+            errorMessage = null;
+            return true;
         }
     }
 }

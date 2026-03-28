@@ -77,7 +77,7 @@ namespace DTech.Blackboard.Tests.EditorMode
 			var var2 = new BlackboardVariable<int> { Name = "Score", Value = 200 };
 			
 			_holder.Add(var1);
-			LogAssert.Expect(LogType.Error, "BlackboardVariableHolder.Add: Variable with name 'Score' already exists");
+			LogAssert.Expect(LogType.Error, "BlackboardVariableHolder.Add: Variable name 'Score' is already used by 'Score'.");
 			_holder.Add(var2);
 			
 			Assert.That(_holder["Score"], Is.SameAs(var1));
@@ -90,9 +90,22 @@ namespace DTech.Blackboard.Tests.EditorMode
 			var var2 = new BlackboardVariable<int> { Name = "Score", Value = 200 };
 			
 			_holder.Add(var1);
-			LogAssert.Expect(LogType.Error, "BlackboardVariableHolder.Add: Variable with name 'Score' already exists");
+			LogAssert.Expect(LogType.Error, "BlackboardVariableHolder.Add: Variable name 'Score' is already used by 'Score'.");
 			_holder.Add(var2);
 			
+			Assert.That(_holder["Score"], Is.SameAs(var1));
+		}
+
+		[Test]
+		public void Add_WhenVariableAlreadyExists_WithDifferentCaseAndSpaces_LogsError()
+		{
+			var var1 = new BlackboardVariable<int> { Name = "Score", Value = 100 };
+			var var2 = new BlackboardVariable<int> { Name = " score ", Value = 200 };
+
+			_holder.Add(var1);
+			LogAssert.Expect(LogType.Error, "BlackboardVariableHolder.Add: Variable name 'score' is already used by 'Score'.");
+			_holder.Add(var2);
+
 			Assert.That(_holder["Score"], Is.SameAs(var1));
 		}
 
@@ -103,6 +116,15 @@ namespace DTech.Blackboard.Tests.EditorMode
 			_holder.Add(variable);
 			
 			Assert.That(_holder.Contains("IsActive"), Is.True);
+		}
+
+		[Test]
+		public void Contains_WhenVariableExists_WithDifferentCaseAndSpaces_ReturnsTrue()
+		{
+			var variable = new BlackboardVariable<bool> { Name = "IsActive", Value = true };
+			_holder.Add(variable);
+
+			Assert.That(_holder.Contains(" isactive "), Is.True);
 		}
 
 		[Test]
@@ -160,6 +182,18 @@ namespace DTech.Blackboard.Tests.EditorMode
 		}
 
 		[Test]
+		public void TryGetVariable_ByName_WhenVariableExists_WithDifferentCaseAndSpaces_ReturnsTrueAndVariable()
+		{
+			var variable = new BlackboardVariable<int> { Name = "Level", Value = 5 };
+			_holder.Add(variable);
+
+			bool result = _holder.TryGetVariable(" level ", out BlackboardVariable found);
+
+			Assert.That(result, Is.True);
+			Assert.That(found, Is.SameAs(variable));
+		}
+
+		[Test]
 		public void TryGetVariable_ByName_WhenVariableDoesNotExist_ReturnsFalseAndNull()
 		{
 			bool result = _holder.TryGetVariable("NonExistent", out BlackboardVariable found);
@@ -199,6 +233,18 @@ namespace DTech.Blackboard.Tests.EditorMode
 			
 			bool result = _holder.Remove("ToRemove");
 			
+			Assert.That(result, Is.True);
+			Assert.That(_holder.Contains("ToRemove"), Is.False);
+		}
+
+		[Test]
+		public void Remove_ByName_WhenVariableExists_WithDifferentCaseAndSpaces_ReturnsTrue()
+		{
+			var variable = new BlackboardVariable<int> { Name = "ToRemove", Value = 42 };
+			_holder.Add(variable);
+
+			bool result = _holder.Remove(" toremove ");
+
 			Assert.That(result, Is.True);
 			Assert.That(_holder.Contains("ToRemove"), Is.False);
 		}
@@ -292,6 +338,19 @@ namespace DTech.Blackboard.Tests.EditorMode
 			
 			Assert.That(_holder["Counter"], Is.SameAs(replacement));
 			Assert.That(_holder["Counter"].ObjectValue, Is.EqualTo(20));
+		}
+
+		[Test]
+		public void Replace_WhenOriginalVariableExists_WithNamePolicyMatch_ReplacesWithNewVariable()
+		{
+			var original = new BlackboardVariable<int> { Name = "Counter", Value = 10 };
+			var replacement = new BlackboardVariable<int> { Name = " counter ", Value = 20 };
+			_holder.Add(original);
+
+			bool result = _holder.Replace(" COUNTER ", replacement);
+
+			Assert.That(result, Is.True);
+			Assert.That(_holder["Counter"], Is.SameAs(replacement));
 		}
 
 		[Test]

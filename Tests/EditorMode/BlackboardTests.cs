@@ -107,7 +107,7 @@ namespace DTech.Blackboard.Tests.EditorMode
 			var var2 = new BlackboardVariable<int> { Name = "Score", Value = 200 };
 			
 			_blackboard.Add(var1);
-			LogAssert.Expect(LogType.Error, "BlackboardVariableHolder.Add: Variable with name 'Score' already exists");
+			LogAssert.Expect(LogType.Error, "BlackboardVariableHolder.Add: Variable name 'Score' is already used by 'Score'.");
 			_blackboard.Add(var2);
 			
 			Assert.That(_blackboard.VariableCount, Is.EqualTo(1));

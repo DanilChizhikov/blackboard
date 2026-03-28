@@ -20,16 +20,12 @@ namespace DTech.Blackboard
         /// <exception cref="ArgumentException">Thrown when a variable with the same name already exists</exception>
         public SerializableGuid AddVariable(string variableName, object value)
         {
-            for (int i = 0; i < _variables.Count; i++)
+            if (!BlackboardVariableNameValidator.TryValidate(_variables, variableName, null, out string normalizedName, out string errorMessage))
             {
-                BlackboardVariable variable = _variables[i];
-                if (variable.Name == variableName)
-                {
-                    throw new ArgumentException($"{nameof(BlackboardAsset)}.{nameof(AddVariable)}: Variable with name '{variableName}' already exists");
-                }
+                throw new ArgumentException($"{nameof(BlackboardAsset)}.{nameof(AddVariable)}: {errorMessage}");
             }
 
-            BlackboardVariable blackboardVariable = BlackboardVariable.CreateForType(value.GetType(), variableName);
+            BlackboardVariable blackboardVariable = BlackboardVariable.CreateForType(value.GetType(), normalizedName);
             blackboardVariable.ObjectValue = value;
             _variables.Add(blackboardVariable);
             return blackboardVariable.Guid;
@@ -46,7 +42,7 @@ namespace DTech.Blackboard
             for (int i = 0; i < _variables.Count; i++)
             {
                 BlackboardVariable variable = _variables[i];
-                if (variable.Name == variableName)
+                if (BlackboardVariableNameValidator.EqualsByPolicy(variable.Name, variableName))
                 {
                     removeIndex = i;
                     break;

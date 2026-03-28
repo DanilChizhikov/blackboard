@@ -72,5 +72,6 @@ namespace DTech.Blackboard.Editor
 			list.serializedProperty.DeleteArrayElementAtIndex(removeIndex);
 			list.serializedProperty.serializedObject.ApplyModifiedProperties();
 		}
+
 	}
 }
