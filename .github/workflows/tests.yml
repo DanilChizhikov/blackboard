@@ -14,6 +14,7 @@ jobs:
   unity-tests:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         testMode: [editmode]
 
@@ -21,16 +22,12 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Unity
-        uses: game-ci/unity-setup@v2
-        with:
-          unityVersion: 2022.3.0
-          personal: true
-
       - name: Run Unity Tests
         uses: game-ci/unity-test-runner@v4
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
         with:
-          unityVersion: 2022.3.0
+          unityVersion: 2022.3.0f1
           testMode: ${{ matrix.testMode }}
           githubToken: ${{ secrets.GITHUB_TOKEN }}
           testResults: TestResults_${{ matrix.testMode }}.xml
