@@ -131,6 +131,9 @@ public static class BlackboardReadWriteExample
 
         // Typed set
         blackboard.SetValue("Health", health - 10);
+        
+        // Typed set without notification
+        blackboard.SetValueWithoutNotif("Health", health);
 
         // Try-get for safe access
         if (blackboard.TryGetVariable<float>("MoveSpeed", out BlackboardVariable<float> speedVar))
@@ -221,12 +224,15 @@ public abstract class BlackboardVariable
     public abstract object ObjectValue { get; set; }
 
     public static BlackboardVariable CreateForType(Type type, string name);
+    public abstract void SetObjectValueWithoutNotif(object value);
     public abstract BlackboardVariable Clone();
 }
 
 public class BlackboardVariable<T> : BlackboardVariable
 {
+    public event Action<SerializableGuid, T> OnValueChanged;
     public T Value { get; set; }
+    public void SetValueWithoutNotif(T value);
 }
 ```
 
@@ -268,8 +274,17 @@ public static class BlackboardExtensions
     public static T GetValue<T>(this Blackboard blackboard, SerializableGuid guid);
 
     public static void SetValue<T>(this Blackboard blackboard, string name, T value);
+    public static void SetValueWithoutNotif<T>(this Blackboard blackboard, string name, T value);
     public static void SetValue<T>(this Blackboard blackboard, SerializableGuid guid, T value);
+    public static void SetValueWithoutNotif<T>(this Blackboard blackboard, SerializableGuid guid, T value);
 }
+```
+
+Notification behavior example:
+
+```csharp
+blackboard.SetValue("Health", 90); // invokes BlackboardVariable<int>.OnValueChanged
+blackboard.SetValueWithoutNotif("Health", 90); // updates value without notification
 ```
 
 ### BlackboardEnumAttribute

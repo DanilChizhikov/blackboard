@@ -506,5 +506,154 @@ namespace DTech.Blackboard.Tests.EditorMode
 			Assert.That(byNameResult, Is.SameAs(variable));
 			Assert.That(byGuidResult.Guid, Is.EqualTo(originalGuid));
 		}
+
+		[Test]
+		public void BlackboardVariable_Value_WhenChanged_InvokesOnValueChangedWithGuidAndValue()
+		{
+			var variable = new BlackboardVariable<int> { Name = "Observed", Value = 1 };
+			int callCount = 0;
+			SerializableGuid receivedGuid = default;
+			int receivedValue = default;
+
+			variable.OnValueChanged += (guid, value) =>
+			{
+				callCount++;
+				receivedGuid = guid;
+				receivedValue = value;
+			};
+
+			variable.Value = 5;
+
+			Assert.That(callCount, Is.EqualTo(1));
+			Assert.That(receivedGuid, Is.EqualTo(variable.Guid));
+			Assert.That(receivedValue, Is.EqualTo(5));
+		}
+
+		[Test]
+		public void BlackboardVariable_Value_WhenSetToSameValue_DoesNotInvokeOnValueChanged()
+		{
+			var variable = new BlackboardVariable<int> { Name = "Observed", Value = 10 };
+			int callCount = 0;
+			variable.OnValueChanged += (_, _) => callCount++;
+
+			variable.Value = 10;
+
+			Assert.That(callCount, Is.EqualTo(0));
+		}
+
+		[Test]
+		public void BlackboardVariable_ObjectValueSetter_UsesSameNotificationRulesAsValueSetter()
+		{
+			var variable = new BlackboardVariable<int> { Name = "Observed", Value = 1 };
+			int callCount = 0;
+			int receivedValue = default;
+
+			variable.OnValueChanged += (_, value) =>
+			{
+				callCount++;
+				receivedValue = value;
+			};
+
+			variable.ObjectValue = 4;
+			variable.ObjectValue = 4;
+
+			Assert.That(callCount, Is.EqualTo(1));
+			Assert.That(receivedValue, Is.EqualTo(4));
+			Assert.That(variable.Value, Is.EqualTo(4));
+		}
+
+		[Test]
+		public void BlackboardVariable_SetValueWithoutNotif_UpdatesValueWithoutInvokingOnValueChanged()
+		{
+			var variable = new BlackboardVariable<int> { Name = "Observed", Value = 1 };
+			int callCount = 0;
+			variable.OnValueChanged += (_, _) => callCount++;
+
+			variable.SetValueWithoutNotif(9);
+
+			Assert.That(variable.Value, Is.EqualTo(9));
+			Assert.That(callCount, Is.EqualTo(0));
+		}
+
+		[Test]
+		public void BlackboardVariable_SetObjectValueWithoutNotif_UpdatesValueWithoutInvokingOnValueChanged()
+		{
+			var variable = new BlackboardVariable<int> { Name = "Observed", Value = 1 };
+			int callCount = 0;
+			variable.OnValueChanged += (_, _) => callCount++;
+
+			variable.SetObjectValueWithoutNotif(7);
+
+			Assert.That(variable.Value, Is.EqualTo(7));
+			Assert.That(callCount, Is.EqualTo(0));
+		}
+
+		[Test]
+		public void BlackboardExtensions_SetValue_ByName_InvokesOnValueChanged()
+		{
+			var variable = new BlackboardVariable<int> { Name = "Health", Value = 10 };
+			_blackboard.Add(variable);
+			int callCount = 0;
+			int receivedValue = default;
+			variable.OnValueChanged += (_, value) =>
+			{
+				callCount++;
+				receivedValue = value;
+			};
+
+			_blackboard.SetValue("Health", 15);
+
+			Assert.That(variable.Value, Is.EqualTo(15));
+			Assert.That(callCount, Is.EqualTo(1));
+			Assert.That(receivedValue, Is.EqualTo(15));
+		}
+
+		[Test]
+		public void BlackboardExtensions_SetValueWithoutNotif_ByName_UpdatesValueWithoutNotification()
+		{
+			var variable = new BlackboardVariable<int> { Name = "Health", Value = 10 };
+			_blackboard.Add(variable);
+			int callCount = 0;
+			variable.OnValueChanged += (_, _) => callCount++;
+
+			_blackboard.SetValueWithoutNotif("Health", 20);
+
+			Assert.That(variable.Value, Is.EqualTo(20));
+			Assert.That(callCount, Is.EqualTo(0));
+		}
+
+		[Test]
+		public void BlackboardExtensions_SetValue_ByGuid_InvokesOnValueChanged()
+		{
+			var variable = new BlackboardVariable<int> { Name = "Health", Value = 10 };
+			_blackboard.Add(variable);
+			int callCount = 0;
+			int receivedValue = default;
+			variable.OnValueChanged += (_, value) =>
+			{
+				callCount++;
+				receivedValue = value;
+			};
+
+			_blackboard.SetValue(variable.Guid, 30);
+
+			Assert.That(variable.Value, Is.EqualTo(30));
+			Assert.That(callCount, Is.EqualTo(1));
+			Assert.That(receivedValue, Is.EqualTo(30));
+		}
+
+		[Test]
+		public void BlackboardExtensions_SetValueWithoutNotif_ByGuid_UpdatesValueWithoutNotification()
+		{
+			var variable = new BlackboardVariable<int> { Name = "Health", Value = 10 };
+			_blackboard.Add(variable);
+			int callCount = 0;
+			variable.OnValueChanged += (_, _) => callCount++;
+
+			_blackboard.SetValueWithoutNotif(variable.Guid, 40);
+
+			Assert.That(variable.Value, Is.EqualTo(40));
+			Assert.That(callCount, Is.EqualTo(0));
+		}
 	}
 }

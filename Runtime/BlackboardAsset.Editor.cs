@@ -21,13 +21,17 @@ namespace DTech.Blackboard
         /// <exception cref="ArgumentException">Thrown when a variable with the same name already exists</exception>
         public SerializableGuid AddVariable(string variableName, Type valueType)
         {
+            if (_variables == null)
+            {
+                _variables = new List<BlackboardVariable>();
+            }
+            
             if (!BlackboardVariableNameValidator.TryValidate(_variables, variableName, null, out string normalizedName, out string errorMessage))
             {
                 throw new ArgumentException($"{nameof(BlackboardAsset)}.{nameof(AddVariable)}: {errorMessage}");
             }
 
             BlackboardVariable blackboardVariable = BlackboardVariable.CreateForType(valueType, normalizedName);
-            blackboardVariable.ObjectValue = default;
             _variables.Add(blackboardVariable);
             return blackboardVariable.Guid;
         }
@@ -39,6 +43,11 @@ namespace DTech.Blackboard
         /// <returns>TRUE if the variable was removed, FALSE otherwise</returns>
         public bool RemoveVariable(string variableName)
         {
+            if (_variables == null)
+            {
+                _variables = new List<BlackboardVariable>();
+            }
+            
             int removeIndex = -1;
             for (int i = 0; i < _variables.Count; i++)
             {
