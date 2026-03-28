@@ -51,7 +51,7 @@ It supports:
 
 To pin a specific release tag, use `v*.*.*`:
 
-`https://github.com/DanilChizhikov/blackboard.git#v0.0.1`
+`https://github.com/DanilChizhikov/blackboard.git#v1.0.0`
 
 ## Features
 - **Typed variables**
