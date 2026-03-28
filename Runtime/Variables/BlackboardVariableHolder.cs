@@ -9,6 +9,8 @@ namespace DTech.Blackboard
         private readonly Dictionary<string, SerializableGuid> _nameToGuid;
         private readonly Dictionary<SerializableGuid, BlackboardVariable> _guidToVariable;
         
+        public int Count => _guidToVariable.Count;
+        
         public BlackboardVariable this[string name]
         {
             get
@@ -145,6 +147,24 @@ namespace DTech.Blackboard
         public bool TryGetVariable(SerializableGuid guid, out BlackboardVariable variable)
         {
             return _guidToVariable.TryGetValue(guid, out variable);
+        }
+        
+        public int GetVariablesNonAlloc(BlackboardVariable[] variables)
+        {
+            int count = Math.Min(_guidToVariable.Count, variables.Length);
+
+            int iterator = 0;
+            foreach (var value in _guidToVariable.Values)
+            {
+                if (iterator >= count)
+                {
+                    break;
+                }
+
+                variables[iterator++] = value;
+            }
+
+            return count;
         }
         
         public void Dispose()

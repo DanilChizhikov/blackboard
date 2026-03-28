@@ -6,6 +6,11 @@ namespace DTech.Blackboard
     public sealed class Blackboard : IDisposable
     {
         private readonly BlackboardVariableHolder _holder;
+        
+        /// <summary>
+        /// Gets the number of variables in the blackboard.
+        /// </summary>
+        public int VariableCount => _holder.Count;
 
         public Blackboard(IEnumerable<BlackboardVariable> variables)
         {
@@ -87,6 +92,16 @@ namespace DTech.Blackboard
 
             variable = cachedVariable.ValueType.IsAssignableFrom(typeof(T)) ? (BlackboardVariable<T>)cachedVariable : null;
             return variable != null;
+        }
+        
+        /// <summary>
+        /// Gets all variables in the blackboard.
+        /// </summary>
+        /// <param name="variables">Array to store the variables</param>
+        /// <returns>Number of variables</returns>
+        public int GetVariablesNonAlloc(BlackboardVariable[] variables)
+        {
+            return _holder.GetVariablesNonAlloc(variables);
         }
         
         public void Dispose()

@@ -350,6 +350,65 @@ namespace DTech.Blackboard.Tests.EditorMode
 		}
 
 		[Test]
+		public void GetVariablesNonAlloc_WhenArraySizeMatches_CopiesAllVariables()
+		{
+			var var1 = new BlackboardVariable<int> { Name = "Var1", Value = 1 };
+			var var2 = new BlackboardVariable<int> { Name = "Var2", Value = 2 };
+			var var3 = new BlackboardVariable<int> { Name = "Var3", Value = 3 };
+			_holder.Add(var1);
+			_holder.Add(var2);
+			_holder.Add(var3);
+			
+			var array = new BlackboardVariable[3];
+			int count = _holder.GetVariablesNonAlloc(array);
+			
+			Assert.That(count, Is.EqualTo(3));
+			Assert.That(array[0], Is.Not.Null);
+			Assert.That(array[1], Is.Not.Null);
+			Assert.That(array[2], Is.Not.Null);
+		}
+
+		[Test]
+		public void GetVariablesNonAlloc_WhenArraySmaller_CopiesOnlyWhatFits()
+		{
+			var var1 = new BlackboardVariable<int> { Name = "Var1", Value = 1 };
+			var var2 = new BlackboardVariable<int> { Name = "Var2", Value = 2 };
+			var var3 = new BlackboardVariable<int> { Name = "Var3", Value = 3 };
+			_holder.Add(var1);
+			_holder.Add(var2);
+			_holder.Add(var3);
+			
+			var array = new BlackboardVariable[2];
+			int count = _holder.GetVariablesNonAlloc(array);
+			
+			Assert.That(count, Is.EqualTo(2));
+			Assert.That(array[0], Is.Not.Null);
+			Assert.That(array[1], Is.Not.Null);
+		}
+
+		[Test]
+		public void GetVariablesNonAlloc_WhenNoVariables_ReturnsZero()
+		{
+			var array = new BlackboardVariable[5];
+			
+			int count = _holder.GetVariablesNonAlloc(array);
+			
+			Assert.That(count, Is.EqualTo(0));
+		}
+
+		[Test]
+		public void GetVariablesNonAlloc_WhenEmptyArray_ReturnsZero()
+		{
+			var var1 = new BlackboardVariable<int> { Name = "Var1", Value = 1 };
+			_holder.Add(var1);
+			
+			var array = new BlackboardVariable[0];
+			int count = _holder.GetVariablesNonAlloc(array);
+			
+			Assert.That(count, Is.EqualTo(0));
+		}
+
+		[Test]
 		public void Variable_CanBeRetrievedByGuid_AfterBeingAdded()
 		{
 			var variable = new BlackboardVariable<int> { Name = "MyVar", Value = 100 };
