@@ -1,9 +1,9 @@
 {
     "name": "com.dtech.blackboard",
-    "displayName": "Blackboard",
-    "version": "0.0.1",
-    "unity": "2022.3",
-    "description": "",
+    "displayName": "Blackboard - Typed Variable System",
+    "version": "1.0.0",
+    "unity": "6000.0",
+    "description": "Typed blackboard variable system for Unity with ScriptableObject authoring and runtime access by name or GUID.",
     "changelogUrl": "https://github.com/DanilChizhikov/blackboard/releases/tag/v0.0.1",
     "documentationUrl": "https://github.com/DanilChizhikov/blackboard/",
     "keywords": [
@@ -12,12 +12,12 @@
         "state machine",
         "blackboard"
     ],
-    "category": "Tools",
+    "category": "Utilities",
     "author": "DTech",
     "repository": {
         "type": "git",
-        "url": "ssh://github.com:DanilChizhikov/blackboard.git",
-        "directory": "com.dtech"
+        "url": "git@github.com:DanilChizhikov/blackboard.git",
+        "directory": "."
     },
     "publishConfig": {
         "registry": "https://npm.pkg.github.com/@DanilChizhikov"
