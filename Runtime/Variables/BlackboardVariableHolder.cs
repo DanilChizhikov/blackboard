@@ -100,6 +100,26 @@ namespace DTech.Blackboard
             Add(to);
             return true;
         }
+        
+        public bool Replace(SerializableGuid sourceGuid, BlackboardVariable to)
+        {
+            if (!TryGetVariable(sourceGuid, out BlackboardVariable from))
+            {
+                Debug.LogError($"{nameof(BlackboardVariableHolder)}.{nameof(Replace)}: Variable with guid '{sourceGuid}' not found");
+                return false;
+            }
+
+            if (from.Name != to.Name)
+            {
+                Debug.LogError($"{nameof(BlackboardVariableHolder)}.{nameof(Replace)}: Variable with name '{from.Name}' cannot be replaced with '{to.Name}'");
+                return false;
+            }
+            
+            Remove(sourceGuid);
+            to.Guid = sourceGuid;
+            Add(to);
+            return true;
+        }
 
         public bool Remove(string name)
         {

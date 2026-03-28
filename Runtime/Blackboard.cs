@@ -35,6 +35,79 @@ namespace DTech.Blackboard
         }
 
         /// <summary>
+        /// Adds a variable to the blackboard.
+        /// </summary>
+        /// <param name="variable">Blackboard variable</param>
+        public void Add(BlackboardVariable variable)
+        {
+            _holder.Add(variable);
+        }
+        
+        /// <summary>
+        /// Replaces a variable in the blackboard.
+        /// </summary>
+        /// <param name="sourceVariableName">Variable name to replace</param>
+        /// <param name="to">New variable</param>
+        /// <returns>TRUE if the variable was replaced, FALSE otherwise</returns>
+        public bool Replace(string sourceVariableName, BlackboardVariable to)
+        {
+            return _holder.Replace(sourceVariableName, to);
+        }
+        
+        /// <summary>
+        /// Replaces a variable in the blackboard.
+        /// </summary>
+        /// <param name="sourceGuid">Variable guid to replace</param>
+        /// <param name="to">New variable</param>
+        /// <returns>TRUE if the variable was replaced, FALSE otherwise</returns>
+        public bool Replace(SerializableGuid sourceGuid, BlackboardVariable to)
+        {
+            return _holder.Replace(sourceGuid, to);
+        }
+
+        /// <summary>
+        /// Removes a variable from the blackboard.
+        /// </summary>
+        /// <param name="name">Variable name to remove</param>
+        /// <returns>TRUE if the variable was removed, FALSE otherwise</returns>
+        public bool Remove(string name)
+        {
+            return _holder.Remove(name);
+        }
+        
+        /// <summary>
+        /// Removes a variable from the blackboard.
+        /// </summary>
+        /// <param name="guid">Variable guid to remove</param>
+        /// <returns>TRUE if the variable was removed, FALSE otherwise</returns>
+        public bool Remove(SerializableGuid guid)
+        {
+            return _holder.Remove(guid);
+        }
+        
+        /// <summary>
+        /// Removes a variable from the blackboard.
+        /// </summary>
+        /// <param name="name">Variable name to remove</param>
+        /// <param name="variable">Removed Blackboard</param>
+        /// <returns>TRUE if the variable was removed, FALSE otherwise</returns>
+        public bool Remove(string name, out BlackboardVariable variable)
+        {
+            return _holder.Remove(name, out variable);
+        }
+        
+        /// <summary>
+        /// Removes a variable from the blackboard.
+        /// </summary>
+        /// <param name="guid">Variable guid to remove</param>
+        /// <param name="variable">Removed Blackboard</param>
+        /// <returns>TRUE if the variable was removed, FALSE otherwise</returns>
+        public bool Remove(SerializableGuid guid, out BlackboardVariable variable)
+        {
+            return _holder.Remove(guid, out variable);
+        }
+
+        /// <summary>
         /// Tries to get a variable by name.
         /// </summary>
         /// <param name="name">Blackboard variable name</param>

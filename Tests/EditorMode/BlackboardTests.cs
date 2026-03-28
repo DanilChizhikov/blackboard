@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEngine;
+using UnityEngine.TestTools;
 
 namespace DTech.Blackboard.Tests.EditorMode
 {
@@ -81,16 +82,204 @@ namespace DTech.Blackboard.Tests.EditorMode
 			var var1 = new BlackboardVariable<int> { Name = "Var1", Value = 1 };
 			var var2 = new BlackboardVariable<float> { Name = "Var2", Value = 2f };
 			
-			_blackboard = new Blackboard(new List<BlackboardVariable> { var1, var2 });
+			_blackboard.Add(var1);
+			_blackboard.Add(var2);
 			
 			Assert.That(_blackboard.VariableCount, Is.EqualTo(2));
+		}
+
+		[Test]
+		public void Add_WhenVariableNotExists_AddsVariable()
+		{
+			var variable = new BlackboardVariable<int> { Name = "Score", Value = 100 };
+			
+			_blackboard.Add(variable);
+			
+			Assert.That(_blackboard.VariableCount, Is.EqualTo(1));
+			Assert.That(_blackboard.TryGetVariable("Score", out BlackboardVariable found), Is.True);
+			Assert.That(found, Is.SameAs(variable));
+		}
+
+		[Test]
+		public void Add_WhenVariableAlreadyExists_DoesNotAddDuplicate()
+		{
+			var var1 = new BlackboardVariable<int> { Name = "Score", Value = 100 };
+			var var2 = new BlackboardVariable<int> { Name = "Score", Value = 200 };
+			
+			_blackboard.Add(var1);
+			LogAssert.Expect(LogType.Error, "BlackboardVariableHolder.Add: Variable with name 'Score' already exists");
+			_blackboard.Add(var2);
+			
+			Assert.That(_blackboard.VariableCount, Is.EqualTo(1));
+			Assert.That(_blackboard.TryGetVariable("Score", out BlackboardVariable found), Is.True);
+			Assert.That(found, Is.SameAs(var1));
+		}
+
+		[Test]
+		public void Remove_ByName_WhenVariableExists_ReturnsTrue()
+		{
+			var variable = new BlackboardVariable<int> { Name = "ToRemove", Value = 42 };
+			_blackboard.Add(variable);
+			
+			bool result = _blackboard.Remove("ToRemove");
+			
+			Assert.That(result, Is.True);
+			Assert.That(_blackboard.VariableCount, Is.EqualTo(0));
+		}
+
+		[Test]
+		public void Remove_ByName_WhenVariableDoesNotExist_ReturnsFalse()
+		{
+			bool result = _blackboard.Remove("NonExistent");
+			
+			Assert.That(result, Is.False);
+		}
+
+		[Test]
+		public void Remove_ByName_WithOut_WhenVariableExists_ReturnsTrueAndVariable()
+		{
+			var variable = new BlackboardVariable<string> { Name = "ToRemove", Value = "value" };
+			_blackboard.Add(variable);
+			
+			bool result = _blackboard.Remove("ToRemove", out BlackboardVariable removed);
+			
+			Assert.That(result, Is.True);
+			Assert.That(removed, Is.SameAs(variable));
+			Assert.That(_blackboard.VariableCount, Is.EqualTo(0));
+		}
+
+		[Test]
+		public void Remove_ByName_WithOut_WhenVariableDoesNotExist_ReturnsFalseAndNull()
+		{
+			bool result = _blackboard.Remove("NonExistent", out BlackboardVariable removed);
+			
+			Assert.That(result, Is.False);
+			Assert.That(removed, Is.Null);
+		}
+
+		[Test]
+		public void Remove_ByGuid_WhenVariableExists_ReturnsTrue()
+		{
+			var variable = new BlackboardVariable<float> { Name = "ToRemove", Value = 1.5f };
+			_blackboard.Add(variable);
+			var guid = variable.Guid;
+			
+			bool result = _blackboard.Remove(guid);
+			
+			Assert.That(result, Is.True);
+			Assert.That(_blackboard.VariableCount, Is.EqualTo(0));
+		}
+
+		[Test]
+		public void Remove_ByGuid_WhenVariableDoesNotExist_ReturnsFalse()
+		{
+			var nonExistentGuid = SerializableGuid.Generate();
+			
+			bool result = _blackboard.Remove(nonExistentGuid);
+			
+			Assert.That(result, Is.False);
+		}
+
+		[Test]
+		public void Remove_ByGuid_WithOut_WhenVariableExists_ReturnsTrueAndVariable()
+		{
+			var variable = new BlackboardVariable<bool> { Name = "ToRemove", Value = true };
+			_blackboard.Add(variable);
+			var guid = variable.Guid;
+			
+			bool result = _blackboard.Remove(guid, out BlackboardVariable removed);
+			
+			Assert.That(result, Is.True);
+			Assert.That(removed, Is.SameAs(variable));
+			Assert.That(_blackboard.VariableCount, Is.EqualTo(0));
+		}
+
+		[Test]
+		public void Remove_ByGuid_WithOut_WhenVariableDoesNotExist_ReturnsFalseAndNull()
+		{
+			var nonExistentGuid = SerializableGuid.Generate();
+			
+			bool result = _blackboard.Remove(nonExistentGuid, out BlackboardVariable removed);
+			
+			Assert.That(result, Is.False);
+			Assert.That(removed, Is.Null);
+		}
+
+		[Test]
+		public void Replace_ByName_WhenVariableExists_ReplacesVariable()
+		{
+			var original = new BlackboardVariable<int> { Name = "Counter", Value = 10 };
+			var replacement = new BlackboardVariable<int> { Name = "Counter", Value = 20 };
+			_blackboard.Add(original);
+			
+			bool result = _blackboard.Replace("Counter", replacement);
+			
+			Assert.That(result, Is.True);
+			Assert.That(_blackboard.TryGetVariable("Counter", out BlackboardVariable found), Is.True);
+			Assert.That(found, Is.SameAs(replacement));
+			Assert.That(found.ObjectValue, Is.EqualTo(20));
+		}
+
+		[Test]
+		public void Replace_ByName_WhenVariableDoesNotExist_ReturnsFalse()
+		{
+			var replacement = new BlackboardVariable<int> { Name = "NonExistent", Value = 20 };
+			
+			LogAssert.Expect(LogType.Error, "BlackboardVariableHolder.Replace: Variable with name 'NonExistent' not found");
+			bool result = _blackboard.Replace("NonExistent", replacement);
+			
+			Assert.That(result, Is.False);
+			Assert.That(_blackboard.VariableCount, Is.EqualTo(0));
+		}
+
+		[Test]
+		public void Replace_ByGuid_WhenVariableExists_ReplacesVariable()
+		{
+			var original = new BlackboardVariable<float> { Name = "Speed", Value = 5f };
+			var replacement = new BlackboardVariable<float> { Name = "Speed", Value = 10f };
+			_blackboard.Add(original);
+			var originalGuid = original.Guid;
+			
+			bool result = _blackboard.Replace(originalGuid, replacement);
+			
+			Assert.That(result, Is.True);
+			Assert.That(_blackboard.TryGetVariable("Speed", out BlackboardVariable found), Is.True);
+			Assert.That(found, Is.SameAs(replacement));
+			Assert.That(found.Guid, Is.EqualTo(originalGuid));
+		}
+
+		[Test]
+		public void Replace_ByGuid_WhenVariableDoesNotExist_ReturnsFalse()
+		{
+			var nonExistentGuid = SerializableGuid.Generate();
+			var replacement = new BlackboardVariable<int> { Name = "Test", Value = 20 };
+			
+			LogAssert.Expect(LogType.Error, $"BlackboardVariableHolder.Replace: Variable with guid '{nonExistentGuid}' not found");
+			bool result = _blackboard.Replace(nonExistentGuid, replacement);
+			
+			Assert.That(result, Is.False);
+		}
+
+		[Test]
+		public void Replace_WhenVariableHasDifferentName_ReturnsFalse()
+		{
+			var original = new BlackboardVariable<int> { Name = "Original", Value = 10 };
+			var replacement = new BlackboardVariable<int> { Name = "Different", Value = 20 };
+			_blackboard.Add(original);
+			
+			LogAssert.Expect(LogType.Error, "BlackboardVariableHolder.Replace: Variable with name 'Original' cannot be replaced with 'Different'");
+			bool result = _blackboard.Replace("Original", replacement);
+			
+			Assert.That(result, Is.False);
+			Assert.That(_blackboard.TryGetVariable("Original", out BlackboardVariable found), Is.True);
+			Assert.That(found, Is.SameAs(original));
 		}
 
 		[Test]
 		public void TryGetVariable_ByName_WhenVariableExists_ReturnsTrueAndVariable()
 		{
 			var variable = new BlackboardVariable<int> { Name = "Score", Value = 50 };
-			_blackboard = new Blackboard(new List<BlackboardVariable> { variable });
+			_blackboard.Add(variable);
 			
 			bool result = _blackboard.TryGetVariable("Score", out BlackboardVariable found);
 			
@@ -111,7 +300,7 @@ namespace DTech.Blackboard.Tests.EditorMode
 		public void TryGetVariable_Generic_ByName_WhenVariableExistsAndTypeMatches_ReturnsTrueAndTypedVariable()
 		{
 			var variable = new BlackboardVariable<int> { Name = "Count", Value = 42 };
-			_blackboard = new Blackboard(new List<BlackboardVariable> { variable });
+			_blackboard.Add(variable);
 			
 			bool result = _blackboard.TryGetVariable<int>("Count", out BlackboardVariable<int> found);
 			
@@ -124,7 +313,7 @@ namespace DTech.Blackboard.Tests.EditorMode
 		public void TryGetVariable_Generic_ByName_WhenVariableExistsButTypeDoesNotMatch_ReturnsFalseAndNull()
 		{
 			var variable = new BlackboardVariable<int> { Name = "Number", Value = 10 };
-			_blackboard = new Blackboard(new List<BlackboardVariable> { variable });
+			_blackboard.Add(variable);
 			
 			bool result = _blackboard.TryGetVariable<string>("Number", out BlackboardVariable<string> found);
 			
@@ -145,7 +334,7 @@ namespace DTech.Blackboard.Tests.EditorMode
 		public void TryGetVariable_ByGuid_WhenVariableExists_ReturnsTrueAndVariable()
 		{
 			var variable = new BlackboardVariable<Vector3> { Name = "Position", Value = Vector3.one };
-			_blackboard = new Blackboard(new List<BlackboardVariable> { variable });
+			_blackboard.Add(variable);
 			var guid = variable.Guid;
 			
 			bool result = _blackboard.TryGetVariable(guid, out BlackboardVariable found);
@@ -169,7 +358,7 @@ namespace DTech.Blackboard.Tests.EditorMode
 		public void TryGetVariable_Generic_ByGuid_WhenVariableExistsAndTypeMatches_ReturnsTrueAndTypedVariable()
 		{
 			var variable = new BlackboardVariable<bool> { Name = "IsActive", Value = true };
-			_blackboard = new Blackboard(new List<BlackboardVariable> { variable });
+			_blackboard.Add(variable);
 			var guid = variable.Guid;
 			
 			bool result = _blackboard.TryGetVariable<bool>(guid, out BlackboardVariable<bool> found);
@@ -182,7 +371,7 @@ namespace DTech.Blackboard.Tests.EditorMode
 		public void TryGetVariable_Generic_ByGuid_WhenVariableExistsButTypeDoesNotMatch_ReturnsFalseAndNull()
 		{
 			var variable = new BlackboardVariable<float> { Name = "Speed", Value = 5.5f };
-			_blackboard = new Blackboard(new List<BlackboardVariable> { variable });
+			_blackboard.Add(variable);
 			var guid = variable.Guid;
 			
 			bool result = _blackboard.TryGetVariable<int>(guid, out BlackboardVariable<int> found);
@@ -208,7 +397,9 @@ namespace DTech.Blackboard.Tests.EditorMode
 			var var1 = new BlackboardVariable<int> { Name = "Var1", Value = 1 };
 			var var2 = new BlackboardVariable<int> { Name = "Var2", Value = 2 };
 			var var3 = new BlackboardVariable<int> { Name = "Var3", Value = 3 };
-			_blackboard = new Blackboard(new List<BlackboardVariable> { var1, var2, var3 });
+			_blackboard.Add(var1);
+			_blackboard.Add(var2);
+			_blackboard.Add(var3);
 			
 			var array = new BlackboardVariable[3];
 			int count = _blackboard.GetVariablesNonAlloc(array);
@@ -225,7 +416,9 @@ namespace DTech.Blackboard.Tests.EditorMode
 			var var1 = new BlackboardVariable<int> { Name = "Var1", Value = 1 };
 			var var2 = new BlackboardVariable<int> { Name = "Var2", Value = 2 };
 			var var3 = new BlackboardVariable<int> { Name = "Var3", Value = 3 };
-			_blackboard = new Blackboard(new List<BlackboardVariable> { var1, var2, var3 });
+			_blackboard.Add(var1);
+			_blackboard.Add(var2);
+			_blackboard.Add(var3);
 			
 			var array = new BlackboardVariable[2];
 			int count = _blackboard.GetVariablesNonAlloc(array);
@@ -249,7 +442,7 @@ namespace DTech.Blackboard.Tests.EditorMode
 		public void GetVariablesNonAlloc_WhenEmptyArray_ReturnsZero()
 		{
 			var var1 = new BlackboardVariable<int> { Name = "Var1", Value = 1 };
-			_blackboard = new Blackboard(new List<BlackboardVariable> { var1 });
+			_blackboard.Add(var1);
 			
 			var array = new BlackboardVariable[0];
 			int count = _blackboard.GetVariablesNonAlloc(array);
@@ -262,7 +455,8 @@ namespace DTech.Blackboard.Tests.EditorMode
 		{
 			var var1 = new BlackboardVariable<int> { Name = "Var1", Value = 1 };
 			var var2 = new BlackboardVariable<string> { Name = "Var2", Value = "test" };
-			_blackboard = new Blackboard(new List<BlackboardVariable> { var1, var2 });
+			_blackboard.Add(var1);
+			_blackboard.Add(var2);
 			
 			_blackboard.Dispose();
 			
@@ -278,7 +472,10 @@ namespace DTech.Blackboard.Tests.EditorMode
 			var stringVar = new BlackboardVariable<string> { Name = "StringVar", Value = "hello" };
 			var boolVar = new BlackboardVariable<bool> { Name = "BoolVar", Value = true };
 			
-			_blackboard = new Blackboard(new List<BlackboardVariable> { intVar, floatVar, stringVar, boolVar });
+			_blackboard.Add(intVar);
+			_blackboard.Add(floatVar);
+			_blackboard.Add(stringVar);
+			_blackboard.Add(boolVar);
 			
 			Assert.That(_blackboard.TryGetVariable<int>("IntVar", out var foundInt), Is.True);
 			Assert.That(foundInt.Value, Is.EqualTo(42));
@@ -298,7 +495,7 @@ namespace DTech.Blackboard.Tests.EditorMode
 		{
 			var variable = new BlackboardVariable<int> { Name = "TestVar", Value = 100 };
 			var originalGuid = variable.Guid;
-			_blackboard = new Blackboard(new List<BlackboardVariable> { variable });
+			_blackboard.Add(variable);
 			
 			var retrievedByGuid = _blackboard.TryGetVariable(originalGuid, out BlackboardVariable byGuidResult);
 			var retrievedByName = _blackboard.TryGetVariable("TestVar", out BlackboardVariable byNameResult);
