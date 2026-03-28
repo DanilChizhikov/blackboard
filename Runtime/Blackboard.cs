@@ -29,13 +29,25 @@ namespace DTech.Blackboard
             _holder = new BlackboardVariableHolder();
         }
 
+        /// <summary>
+        /// Tries to get a variable by name.
+        /// </summary>
+        /// <param name="name">Blackboard variable name</param>
+        /// <param name="variable">Blackboard variable</param>
+        /// <returns>TRUE if the variable was found, FALSE otherwise</returns>
         public bool TryGetVariable(string name, out BlackboardVariable variable)
         {
             return _holder.TryGetVariable(name, out variable);
         }
 
-        public bool TryGetVariable<T>(string name, out T variable)
-            where T : BlackboardVariable
+        /// <summary>
+        /// Tries to get a variable by name with concrete type.
+        /// </summary>
+        /// <param name="name">Blackboard variable name</param>
+        /// <param name="variable">Blackboard variable</param>
+        /// <typeparam name="T">Value type for the variable</typeparam>
+        /// <returns>TRUE if the variable was found, FALSE otherwise</returns>
+        public bool TryGetVariable<T>(string name, out BlackboardVariable<T> variable)
         {
             variable = null;
             if (!_holder.TryGetVariable(name, out BlackboardVariable cachedVariable))
@@ -43,22 +55,29 @@ namespace DTech.Blackboard
                 return false;
             }
 
-            if (cachedVariable is not T genericVariable)
-            {
-                return false;
-            }
-
-            variable = genericVariable;
-            return true;
+            variable = cachedVariable.ValueType.IsAssignableFrom(typeof(T)) ? (BlackboardVariable<T>)cachedVariable : null;
+            return variable != null;
         }
         
+        /// <summary>
+        /// Tries to get a variable by guid.
+        /// </summary>
+        /// <param name="name">Blackboard variable name</param>
+        /// <param name="variable">Blackboard variable</param>
+        /// <returns>TRUE if the variable was found, FALSE otherwise</returns>
         public bool TryGetVariable(SerializableGuid guid, out BlackboardVariable variable)
         {
             return _holder.TryGetVariable(guid, out variable);
         }
 
-        public bool TryGetVariable<T>(SerializableGuid guid, out T variable)
-            where T : BlackboardVariable
+        /// <summary>
+        /// Tries to get a variable by guid with concrete type.
+        /// </summary>
+        /// <param name="name">Blackboard variable name</param>
+        /// <param name="variable">Blackboard variable</param>
+        /// <typeparam name="T">Value type for the variable</typeparam>
+        /// <returns>TRUE if the variable was found, FALSE otherwise</returns>
+        public bool TryGetVariable<T>(SerializableGuid guid, out BlackboardVariable<T> variable)
         {
             variable = null;
             if (!_holder.TryGetVariable(guid, out BlackboardVariable cachedVariable))
@@ -66,13 +85,8 @@ namespace DTech.Blackboard
                 return false;
             }
 
-            if (cachedVariable is not T genericVariable)
-            {
-                return false;
-            }
-
-            variable = genericVariable;
-            return true;
+            variable = cachedVariable.ValueType.IsAssignableFrom(typeof(T)) ? (BlackboardVariable<T>)cachedVariable : null;
+            return variable != null;
         }
         
         public void Dispose()

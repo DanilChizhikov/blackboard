@@ -12,7 +12,7 @@ namespace DTech.Blackboard
         public SerializableGuid Guid
         {
             get => _guid;
-            protected set => _guid = value;
+            internal set => _guid = value;
         }
 
         public string Name

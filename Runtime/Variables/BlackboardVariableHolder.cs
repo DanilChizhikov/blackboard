@@ -79,16 +79,24 @@ namespace DTech.Blackboard
             _guidToVariable.Add(variable.Guid, variable);
         }
 
-        public void Replace(BlackboardVariable from, BlackboardVariable to)
+        public bool Replace(string sourceVariableName, BlackboardVariable to)
         {
-            if (!Contains(from.Name))
+            if (!TryGetVariable(sourceVariableName, out BlackboardVariable from))
             {
-                Debug.LogError($"{nameof(BlackboardVariableHolder)}.{nameof(Replace)}: Variable with name '{from.Name}' not found");
-                return;
+                Debug.LogError($"{nameof(BlackboardVariableHolder)}.{nameof(Replace)}: Variable with name '{sourceVariableName}' not found");
+                return false;
+            }
+
+            if (from.Name != to.Name)
+            {
+                Debug.LogError($"{nameof(BlackboardVariableHolder)}.{nameof(Replace)}: Variable with name '{from.Name}' cannot be replaced with '{to.Name}'");
+                return false;
             }
             
-            Remove(from.Name);
+            Remove(sourceVariableName);
+            to.Guid = from.Guid;
             Add(to);
+            return true;
         }
 
         public bool Remove(string name)
