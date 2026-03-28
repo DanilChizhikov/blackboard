@@ -26,7 +26,7 @@ namespace DTech.Blackboard
             }
         }
         
-        public Type Type
+        public Type NativeType
         {
             get
             {
@@ -124,7 +124,7 @@ namespace DTech.Blackboard
             Type otherType = null;
             if (obj is SerializableType otherSerializableType)
             {
-                otherType = otherSerializableType.Type;
+                otherType = otherSerializableType.NativeType;
             }
             else if (obj is Type sysType)
             {
@@ -135,7 +135,7 @@ namespace DTech.Blackboard
                 return false;
             }
 
-            return Type == otherType;
+            return NativeType == otherType;
         }
 
         public override int GetHashCode()

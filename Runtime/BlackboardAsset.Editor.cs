@@ -1,6 +1,7 @@
 #if UNITY_EDITOR
 using System;
 using System.Collections.Generic;
+using UnityEditor.Callbacks;
 
 namespace DTech.Blackboard
 {
@@ -15,18 +16,18 @@ namespace DTech.Blackboard
         /// Adds a new variable to the blackboard. Works only in Editor.
         /// </summary>
         /// <param name="variableName">Variable name</param>
-        /// <param name="value">Default value</param>
+        /// <param name="valueType">Type of the value</param>
         /// <returns>Guid of the new variable</returns>
         /// <exception cref="ArgumentException">Thrown when a variable with the same name already exists</exception>
-        public SerializableGuid AddVariable(string variableName, object value)
+        public SerializableGuid AddVariable(string variableName, Type valueType)
         {
             if (!BlackboardVariableNameValidator.TryValidate(_variables, variableName, null, out string normalizedName, out string errorMessage))
             {
                 throw new ArgumentException($"{nameof(BlackboardAsset)}.{nameof(AddVariable)}: {errorMessage}");
             }
 
-            BlackboardVariable blackboardVariable = BlackboardVariable.CreateForType(value.GetType(), normalizedName);
-            blackboardVariable.ObjectValue = value;
+            BlackboardVariable blackboardVariable = BlackboardVariable.CreateForType(valueType, normalizedName);
+            blackboardVariable.ObjectValue = default;
             _variables.Add(blackboardVariable);
             return blackboardVariable.Guid;
         }

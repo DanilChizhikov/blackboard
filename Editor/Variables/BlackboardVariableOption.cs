@@ -17,7 +17,7 @@ namespace DTech.Blackboard.Editor
 
 			if (string.IsNullOrEmpty(path))
 			{
-				Path = BlackboardUtilities.NicifyVariableName(type.Type.Name);
+				Path = BlackboardUtilities.NicifyVariableName(type.NativeType.Name);
 			}
 		}
 	}

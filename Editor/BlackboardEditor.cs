@@ -1,4 +1,5 @@
 using UnityEditor;
+using UnityEditor.Callbacks;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
@@ -17,6 +18,11 @@ namespace DTech.Blackboard.Editor
 		public override void OnInspectorGUI()
 		{
 			serializedObject.Update();
+
+			if (GUILayout.Button("Open On Window"))
+			{
+				OpenEditorWindow(_blackboardAsset.GetInstanceID());
+			}
 			
 			_listDrawProvider.Draw();
 
@@ -40,7 +46,7 @@ namespace DTech.Blackboard.Editor
 					{
 						if (GUILayout.Button("Add"))
 						{
-							_listDrawProvider.Add(normalizedVariableName, _selectedVariableOption.Type.Type);
+							_listDrawProvider.Add(normalizedVariableName, _selectedVariableOption.Type.NativeType);
 							_selectedVariableOption = null;
 							_variableName = string.Empty;
 						}
@@ -59,6 +65,19 @@ namespace DTech.Blackboard.Editor
 				null,
 				out normalizedVariableName,
 				out _);
+		}
+		
+		[OnOpenAsset]
+		private static bool OpenEditorWindow(int instanceID)
+		{
+			string assetPath = AssetDatabase.GetAssetPath(instanceID);
+			var blackboardAsset = (BlackboardAsset)AssetDatabase.LoadAssetAtPath<Object>(assetPath);
+			if (blackboardAsset != null)
+			{
+				BlackboardEditorWindow.ShowWindow(blackboardAsset);
+			}
+			
+			return blackboardAsset != null;
 		}
 
 		private void OnEnable()

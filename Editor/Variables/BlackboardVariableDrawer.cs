@@ -10,6 +10,7 @@ namespace DTech.Blackboard.Editor
 		public abstract Type ServicedValueType { get; }
 		
 		public abstract void Draw(Rect position, SerializedProperty property);
+		public abstract void Draw(SerializedProperty property);
 		
 		public abstract float GetPropertyHeight(SerializedProperty property);
 	}
@@ -86,7 +87,30 @@ namespace DTech.Blackboard.Editor
 			EditorGUI.indentLevel--;
 			EditorGUI.EndProperty();
 		}
-		
+
+		public override void Draw(SerializedProperty property)
+		{
+			BlackboardVariable variable = property.managedReferenceValue as BlackboardVariable;
+			IReadOnlyList<BlackboardVariable> variables = GetVariables(property);
+			SerializedProperty guidProperty = property.FindPropertyRelative(GuidPropertyName);
+			SerializedProperty nameProperty = property.FindPropertyRelative(NamePropertyName);
+			SerializedProperty valueProperty = property.FindPropertyRelative(ValuePropertyName);
+			
+			EditorGUILayout.PropertyField(guidProperty);
+			EditorGUILayout.PropertyField(nameProperty);
+
+			SerializableGuid variableGuid = variable?.Guid ?? default;
+			string key = GetStateKey(property, variableGuid);
+			string displayedName = GetDisplayedName(nameProperty, key);
+			bool hasError = !TryValidateName(variables, displayedName, variableGuid, out _, out string errorMessage);
+			if (hasError)
+			{
+				EditorGUILayout.HelpBox(errorMessage, MessageType.Error);
+			}
+			
+			EditorGUILayout.PropertyField(valueProperty);
+		}
+
 		public override float GetPropertyHeight(SerializedProperty property)
 		{
 			if (!property.isExpanded)

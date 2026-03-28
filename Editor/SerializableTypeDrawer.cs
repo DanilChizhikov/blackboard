@@ -22,7 +22,7 @@ namespace DTech.Blackboard.Editor
                 else
                 {
                     var serializableType = (SerializableType)property.boxedValue;
-                    EditorGUI.TextField(position, label, serializableType.Type.FullName);
+                    EditorGUI.TextField(position, label, serializableType.NativeType.FullName);
                 }
             }
             

@@ -23,7 +23,7 @@ namespace DTech.Blackboard.Editor
 
             Rect buttonRect = new Rect(position);
             buttonRect.width = RegenerateButtonWidth;
-            buttonRect.x = position.width - (RegenerateButtonWidth * 0.5f);
+            buttonRect.x = propertyRect.xMax + ButtonOffset;
 
             GUIContent copyIcon = EditorGUIUtility.IconContent("d__Menu@2x");
             if (GUI.Button(buttonRect, copyIcon))
