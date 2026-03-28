@@ -11,8 +11,8 @@ on:
       - develop
 
 jobs:
-  testPlayMode:
-    name: Test PlayMode
+  testEditMode:
+    name: Test EditMode
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -54,4 +54,4 @@ jobs:
         with:
           unityVersion: 6000.0.0f1
           projectPath: ${{ matrix.projectPath }}
-          testMode: playmode
+          testMode: editmode
