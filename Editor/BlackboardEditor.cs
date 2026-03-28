@@ -11,7 +11,7 @@ namespace DTech.Blackboard.Editor
 
 		private BlackboardAsset _blackboardAsset;
 		private BlackboardVariableListDrawProvider _listDrawProvider;
-		private BlackboardOption _selectedOption;
+		private BlackboardVariableOption _selectedVariableOption;
 		private string _variableName;
 		
 		public override void OnInspectorGUI()
@@ -23,8 +23,8 @@ namespace DTech.Blackboard.Editor
 			using (new EditorGUILayout.VerticalScope("box"))
 			{
 				EditorGUILayout.LabelField("Add Variable");
-				bool hasOption = _selectedOption != null;
-				string caption = hasOption ? _selectedOption.Name : "Select an option";
+				bool hasOption = _selectedVariableOption != null;
+				string caption = hasOption ? _selectedVariableOption.Name : "Select an option";
 				if (GUILayout.Button(caption, EditorStyles.popup))
 				{
 					var provider = BlackboardTypeSearchProvider.Create(SetOption);
@@ -39,8 +39,8 @@ namespace DTech.Blackboard.Editor
 					{
 						if (GUILayout.Button("Add"))
 						{
-							_listDrawProvider.Add(_variableName, _selectedOption.Type.Type);
-							_selectedOption = null;
+							_listDrawProvider.Add(_variableName, _selectedVariableOption.Type.Type);
+							_selectedVariableOption = null;
 							_variableName = string.Empty;
 						}
 					}
@@ -73,7 +73,7 @@ namespace DTech.Blackboard.Editor
 			_blackboardAsset = (BlackboardAsset)target;
 			SerializedProperty listProperty = serializedObject.FindProperty(VariablesPropertyName);
 			_listDrawProvider = new BlackboardVariableListDrawProvider(serializedObject, listProperty);
-			_selectedOption = null;
+			_selectedVariableOption = null;
 			_variableName = string.Empty;
 		}
 
@@ -84,6 +84,6 @@ namespace DTech.Blackboard.Editor
 			_listDrawProvider = null;
 		}
 
-		private void SetOption(BlackboardOption value) => _selectedOption = value;
+		private void SetOption(BlackboardVariableOption value) => _selectedVariableOption = value;
 	}
 }

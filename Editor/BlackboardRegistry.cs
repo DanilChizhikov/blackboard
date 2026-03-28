@@ -9,7 +9,7 @@ namespace DTech.Blackboard.Editor
 {
 	internal static class BlackboardRegistry
 	{
-		private static readonly List<BlackboardOption> _customVariableOptions = new();
+		private static readonly List<BlackboardVariableOption> _customVariableOptions = new();
 		private static readonly string[] _excludedNamespaces =
 		{
 			"Editor",
@@ -17,70 +17,70 @@ namespace DTech.Blackboard.Editor
 			"AppUI",
 		};
         
-		public static List<BlackboardOption> GetDefaultBlackboardOptions()
+		public static List<BlackboardVariableOption> GetDefaultBlackboardOptions()
 		{
-			return new List<BlackboardOption>
+			return new List<BlackboardVariableOption>
 			{
-				new BlackboardOption(typeof(GameObject), "GameObject", "GameObject On Icon", priority: 2),
-				new BlackboardOption(typeof(Transform), "Transform", "Transform Icon", priority: 1),
+				new BlackboardVariableOption(typeof(GameObject), "GameObject", "GameObject On Icon", priority: 2),
+				new BlackboardVariableOption(typeof(Transform), "Transform", "Transform Icon", priority: 1),
 
-				new BlackboardOption(typeof(string), "Basic Types/String"),
-				new BlackboardOption(typeof(float), "Basic Types/Float"),
-				new BlackboardOption(typeof(int), "Basic Types/Integer"),
-				new BlackboardOption(typeof(double), "Basic Types/Double"),
-				new BlackboardOption(typeof(bool), "Basic Types/Boolean"),
-				new BlackboardOption(typeof(Vector2), "Vector Types/Vector2"),
-				new BlackboardOption(typeof(Vector3), "Vector Types/Vector3"),
-				new BlackboardOption(typeof(Vector4), "Vector Types/Vector4"),
-				new BlackboardOption(typeof(Vector2Int), "Vector Types/Vector2 Int"),
-				new BlackboardOption(typeof(Vector3Int), "Vector Types/Vector3 Int"),
-				new BlackboardOption(typeof(Color), "Basic Types/Color"),
+				new BlackboardVariableOption(typeof(string), "Basic Types/String"),
+				new BlackboardVariableOption(typeof(float), "Basic Types/Float"),
+				new BlackboardVariableOption(typeof(int), "Basic Types/Integer"),
+				new BlackboardVariableOption(typeof(double), "Basic Types/Double"),
+				new BlackboardVariableOption(typeof(bool), "Basic Types/Boolean"),
+				new BlackboardVariableOption(typeof(Vector2), "Vector Types/Vector2"),
+				new BlackboardVariableOption(typeof(Vector3), "Vector Types/Vector3"),
+				new BlackboardVariableOption(typeof(Vector4), "Vector Types/Vector4"),
+				new BlackboardVariableOption(typeof(Vector2Int), "Vector Types/Vector2 Int"),
+				new BlackboardVariableOption(typeof(Vector3Int), "Vector Types/Vector3 Int"),
+				new BlackboardVariableOption(typeof(Color), "Basic Types/Color"),
 
 				// Resource Types
-				new BlackboardOption(typeof(ScriptableObject), "Resources/Scriptable Object", "ScriptableObject Icon"),
-				new BlackboardOption(typeof(Texture2D), "Resources/Texture2D"),
-				new BlackboardOption(typeof(Sprite), "Resources/Sprite"),
-				new BlackboardOption(typeof(Material), "Resources/Material"),
-				new BlackboardOption(typeof(AudioClip), "Resources/Audio Clip"),
-				new BlackboardOption(typeof(AnimationClip), "Resources/Animation Clip"),
-				new BlackboardOption(typeof(AudioMixer), "Resources/Audio Mixer"),
-				new BlackboardOption(typeof(TextAsset), "Resources/Text Asset"),
-				new BlackboardOption(typeof(ParticleSystem), "Resources/Particle System"),
+				new BlackboardVariableOption(typeof(ScriptableObject), "Resources/Scriptable Object", "ScriptableObject Icon"),
+				new BlackboardVariableOption(typeof(Texture2D), "Resources/Texture2D"),
+				new BlackboardVariableOption(typeof(Sprite), "Resources/Sprite"),
+				new BlackboardVariableOption(typeof(Material), "Resources/Material"),
+				new BlackboardVariableOption(typeof(AudioClip), "Resources/Audio Clip"),
+				new BlackboardVariableOption(typeof(AnimationClip), "Resources/Animation Clip"),
+				new BlackboardVariableOption(typeof(AudioMixer), "Resources/Audio Mixer"),
+				new BlackboardVariableOption(typeof(TextAsset), "Resources/Text Asset"),
+				new BlackboardVariableOption(typeof(ParticleSystem), "Resources/Particle System"),
 
 				// List Types
-				new BlackboardOption(typeof(List<GameObject>), "List/Game Object List"),
-				new BlackboardOption(typeof(List<string>), "List/String List"),
-				new BlackboardOption(typeof(List<float>), "List/Float List"),
-				new BlackboardOption(typeof(List<int>), "List/Integer List"),
-				new BlackboardOption(typeof(List<double>), "List/Double List"),
-				new BlackboardOption(typeof(List<bool>), "List/Boolean List"),
-				new BlackboardOption(typeof(List<Vector2>), "List/Vector2 List"),
-				new BlackboardOption(typeof(List<Vector3>), "List/Vector3 List"),
-				new BlackboardOption(typeof(List<Vector4>), "List/Vector4 List"),
-				new BlackboardOption(typeof(List<Vector2Int>), "List/Vector2 Int List"),
-				new BlackboardOption(typeof(List<Vector3Int>), "List/Vector3 Int List"),
-				new BlackboardOption(typeof(List<Color>), "List/Color List"),
+				new BlackboardVariableOption(typeof(List<GameObject>), "List/Game Object List"),
+				new BlackboardVariableOption(typeof(List<string>), "List/String List"),
+				new BlackboardVariableOption(typeof(List<float>), "List/Float List"),
+				new BlackboardVariableOption(typeof(List<int>), "List/Integer List"),
+				new BlackboardVariableOption(typeof(List<double>), "List/Double List"),
+				new BlackboardVariableOption(typeof(List<bool>), "List/Boolean List"),
+				new BlackboardVariableOption(typeof(List<Vector2>), "List/Vector2 List"),
+				new BlackboardVariableOption(typeof(List<Vector3>), "List/Vector3 List"),
+				new BlackboardVariableOption(typeof(List<Vector4>), "List/Vector4 List"),
+				new BlackboardVariableOption(typeof(List<Vector2Int>), "List/Vector2 Int List"),
+				new BlackboardVariableOption(typeof(List<Vector3Int>), "List/Vector3 Int List"),
+				new BlackboardVariableOption(typeof(List<Color>), "List/Color List"),
 			};
 		}
 
-		public static List<BlackboardOption> GetEnumVariableTypes()
+		public static List<BlackboardVariableOption> GetEnumVariableTypes()
 		{
-			var enumOptions = new List<BlackboardOption>();
+			var enumOptions = new List<BlackboardVariableOption>();
 			IEnumerable<Type> enumTypes = TypeCache.GetTypesWithAttribute<BlackboardEnumAttribute>()
 				.Where(type => type.IsEnum && Enum.GetValues(type).Length > 0);
 
 			foreach (var type in enumTypes)
 			{
-				enumOptions.Add(new BlackboardOption(type, "Enumeration/" + BlackboardUtilities.NicifyVariableName(type.Name)));
+				enumOptions.Add(new BlackboardVariableOption(type, "Enumeration/" + BlackboardUtilities.NicifyVariableName(type.Name)));
 			}
 
 			return enumOptions;
 		}
 
-		public static List<BlackboardOption> GetStoryVariableTypes()
+		public static List<BlackboardVariableOption> GetStoryVariableTypes()
 		{
-			List<BlackboardOption> options = GetDefaultBlackboardOptions();
-			List<BlackboardOption> enums = GetEnumVariableTypes();
+			List<BlackboardVariableOption> options = GetDefaultBlackboardOptions();
+			List<BlackboardVariableOption> enums = GetEnumVariableTypes();
 
 			AddCustomTypes<Component>(options, "Other/Components", "cs Script Icon");
 			AddCustomTypes<ScriptableObject>(options, "Other/ScriptableObjects", "ScriptableObject Icon");
@@ -90,13 +90,13 @@ namespace DTech.Blackboard.Editor
 			return options;
 		}
 
-		public static List<BlackboardOption> GetStoryVariableTypesWithOperators()
+		public static List<BlackboardVariableOption> GetStoryVariableTypesWithOperators()
 		{
-			List<BlackboardOption> options = GetStoryVariableTypes();
+			List<BlackboardVariableOption> options = GetStoryVariableTypes();
 			return options;
 		}
         
-		public static List<BlackboardOption> GetCustomTypes()
+		public static List<BlackboardVariableOption> GetCustomTypes()
 		{
 			if (_customVariableOptions.Count == 0)
 			{
@@ -107,7 +107,7 @@ namespace DTech.Blackboard.Editor
 			return _customVariableOptions;
 		}
 
-		private static List<BlackboardOption> AddCustomTypes<TypeName>(List<BlackboardOption> options, string path, string icon = null)
+		private static List<BlackboardVariableOption> AddCustomTypes<TypeName>(List<BlackboardVariableOption> options, string path, string icon = null)
 		{
 			if (string.IsNullOrEmpty(path))
 			{
@@ -135,7 +135,7 @@ namespace DTech.Blackboard.Editor
 				}
 
 				string fullPath = $"{path}{namespacePath}{BlackboardUtilities.NicifyVariableName(type.Name, true)}";
-				var option = new BlackboardOption(type, fullPath, icon);
+				var option = new BlackboardVariableOption(type, fullPath, icon);
 				options.Add(option);
 			}
 

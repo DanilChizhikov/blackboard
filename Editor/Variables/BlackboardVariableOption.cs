@@ -1,6 +1,6 @@
 namespace DTech.Blackboard.Editor
 {
-	internal sealed class BlackboardOption
+	internal sealed class BlackboardVariableOption
 	{
 		public string Name => System.IO.Path.GetFileName(Path);
 		public string Path { get; }
@@ -8,7 +8,7 @@ namespace DTech.Blackboard.Editor
 		public string IconName { get; }
 		public int Priority { get; }
 
-		public BlackboardOption(SerializableType type, string path = null, string iconName = null, int priority = 0)
+		public BlackboardVariableOption(SerializableType type, string path = null, string iconName = null, int priority = 0)
 		{
 			Path = path;
 			Type = type;
