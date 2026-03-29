@@ -3,7 +3,20 @@
 ![Unity Tests](https://github.com/DanilChizhikov/blackboard/actions/workflows/tests.yml/badge.svg?branch=master)
 
 ## Overview
-Blackboard is a lightweight typed key-value container for Unity gameplay systems.
+Blackboard is a lightweight typed key-value container designed for Unity gameplay systems.
+
+It solves the common problem of sharing and managing game state between different systems (AI, animation, UI, etc.) without tight coupling.
+
+Think of it as a shared data space where:
+- An AI system writes the current `AIState` to the blackboard
+- An animation system reads that state to pick the right animation
+- The UI displays the same values without direct references to either system
+
+**Common use cases:**
+- **AI behavior trees**: Share perception data, target references, and state between nodes
+- **Animation systems**: Bridge gameplay values (speed, health) to animator parameters
+- **Cutscenes/sequencing**: Pass actor references and scene data to timeline tracks
+- **Gameplay state**: Centralize character stats, quest progress, or match state
 
 It supports:
 - runtime storage and retrieval by variable name or GUID,
@@ -23,11 +36,13 @@ It supports:
   - [Get and Set Values](#get-and-set-values)
   - [Use BlackboardAsset and Convert to Runtime](#use-blackboardasset-and-convert-to-runtime)
   - [Enable Custom Enum Types](#enable-custom-enum-types)
+  - [Enable Custom Types](#enable-custom-types)
 - [API Reference](#api-reference)
   - [Blackboard](#blackboard)
   - [BlackboardVariable and BlackboardVariableT](#blackboardvariable-and-blackboardvariablet)
   - [BlackboardAsset](#blackboardasset)
   - [BlackboardEnumAttribute](#blackboardenumattribute)
+  - [BlackboardCategoryAttribute](#blackboardcategoryattribute)
 - [Dependencies](#dependencies)
 - [License](#license)
 
@@ -179,6 +194,29 @@ public enum AIState
 }
 ```
 
+### Enable Custom Types
+Mark classes or structs with `[BlackboardCategory]` to make them available in the Blackboard type picker. Use the path parameter to organize types into custom categories.
+
+```csharp
+using DTech.Blackboard;
+
+[BlackboardCategory("Gameplay/Stats")]
+[Serializable]
+public class CharacterStats
+{
+    public int Health;
+    public int Mana;
+}
+
+[BlackboardCategory]
+[Serializable]
+public struct PlayerData
+{
+    public string PlayerName;
+    public int Level;
+}
+```
+
 ## API Reference
 This section covers the main public types.
 
@@ -285,6 +323,20 @@ Marks enum types that should be available in Blackboard editor variable options.
 [AttributeUsage(AttributeTargets.Enum)]
 public sealed class BlackboardEnumAttribute : Attribute
 {
+}
+```
+
+### BlackboardCategoryAttribute
+Marks class or struct types that should be available in Blackboard editor variable options. Types must be marked with `[Serializable]` and can optionally specify a custom category path.
+
+```csharp
+[AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct)]
+public sealed class BlackboardCategoryAttribute : Attribute
+{
+    public string Path { get; }
+
+    public BlackboardCategoryAttribute();
+    public BlackboardCategoryAttribute(string path);
 }
 ```
 
