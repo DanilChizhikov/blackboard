@@ -22,7 +22,7 @@ It supports:
 - runtime storage and retrieval by variable name or GUID,
 - strongly-typed values via `BlackboardVariable<T>`,
 - authoring with a `BlackboardAsset` in the inspector,
-- conversion from authored asset data to runtime `Blackboard` instances.
+- conversion from authored asset data to runtime `RuntimeBlackboard` instances.
 
 ## Table of Contents
 - [Getting Started](#getting-started)
@@ -38,7 +38,7 @@ It supports:
   - [Enable Custom Enum Types](#enable-custom-enum-types)
   - [Enable Custom Types](#enable-custom-types)
 - [API Reference](#api-reference)
-  - [Blackboard](#blackboard)
+  - [RuntimeBlackboard](#runtimeblackboard)
   - [BlackboardVariable and BlackboardVariableT](#blackboardvariable-and-blackboardvariablet)
   - [BlackboardAsset](#blackboardasset)
   - [BlackboardEnumAttribute](#blackboardenumattribute)
@@ -79,7 +79,7 @@ To pin a specific release tag, use `v*.*.*`:
 
 - **Replace and remove workflows**
 
-  `Blackboard` supports replace/remove with overloads that optionally return removed variables.
+  `RuntimeBlackboard` supports replace/remove with overloads that optionally return removed variables.
 
 - **Case-insensitive name policy**
 
@@ -101,7 +101,7 @@ Configuration is asset-driven:
 - create and edit a `BlackboardAsset` in the inspector,
 - add variables from the type picker,
 - validate names by the built-in naming policy,
-- convert the asset to a runtime `Blackboard` when needed.
+- convert the asset to a runtime `RuntimeBlackboard` when needed.
 
 ## Usage
 
@@ -111,9 +111,9 @@ using DTech.Blackboard;
 
 public static class BlackboardExample
 {
-    public static Blackboard CreateBlackboard()
+    public static RuntimeBlackboard CreateBlackboard()
     {
-        var blackboard = new Blackboard();
+        var blackboard = new RuntimeBlackboard();
 
         blackboard.Add(new BlackboardVariable<int>
         {
@@ -138,7 +138,7 @@ using DTech.Blackboard;
 
 public static class BlackboardReadWriteExample
 {
-    public static void Run(Blackboard blackboard)
+    public static void Run(RuntimeBlackboard blackboard)
     {
         // Typed get
         int health = blackboard.GetValue<int>("Health");
@@ -165,7 +165,7 @@ using UnityEngine;
 
 public static class BlackboardAssetExample
 {
-    public static Blackboard CreateFromAsset()
+    public static RuntimeBlackboard CreateFromAsset()
     {
         var asset = ScriptableObject.CreateInstance<BlackboardAsset>();
 
@@ -220,11 +220,11 @@ public struct PlayerData
 ## API Reference
 This section covers the main public types.
 
-### Blackboard
+### RuntimeBlackboard
 Main runtime container.
 
 ```csharp
-public sealed class Blackboard : IDisposable
+public sealed class RuntimeBlackboard : IDisposable
 {
     public int VariableCount { get; }
 

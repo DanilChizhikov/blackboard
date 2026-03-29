@@ -9,6 +9,6 @@ namespace DTech.Blackboard
         [SerializeReference]
         private List<BlackboardVariable> _variables = new();
         
-        public Blackboard ToRuntimeBlackboard() => new(_variables);
+        public RuntimeBlackboard ToRuntimeBlackboard() => new(_variables);
     }
 }

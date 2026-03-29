@@ -8,12 +8,12 @@ namespace DTech.Blackboard.Tests.EditorMode
 	[TestFixture]
 	internal sealed class BlackboardTests
 	{
-		private Blackboard _blackboard;
+		private RuntimeBlackboard _blackboard;
 		
 		[SetUp]
 		public void Setup()
 		{
-			_blackboard = new Blackboard();
+			_blackboard = new RuntimeBlackboard();
 		}
 		
 		[TearDown]
@@ -25,7 +25,7 @@ namespace DTech.Blackboard.Tests.EditorMode
 		[Test]
 		public void Constructor_Default_CreatesEmptyBlackboard()
 		{
-			var blackboard = new Blackboard();
+			var blackboard = new RuntimeBlackboard();
 			
 			Assert.That(blackboard.VariableCount, Is.EqualTo(0));
 			
@@ -35,7 +35,7 @@ namespace DTech.Blackboard.Tests.EditorMode
 		[Test]
 		public void Constructor_WithCapacity_CreatesEmptyBlackboard()
 		{
-			var blackboard = new Blackboard(10);
+			var blackboard = new RuntimeBlackboard(10);
 			
 			Assert.That(blackboard.VariableCount, Is.EqualTo(0));
 			
@@ -45,7 +45,7 @@ namespace DTech.Blackboard.Tests.EditorMode
 		[Test]
 		public void Constructor_WithNullVariables_CreatesEmptyBlackboard()
 		{
-			var blackboard = new Blackboard((IEnumerable<BlackboardVariable>)null);
+			var blackboard = new RuntimeBlackboard((IEnumerable<BlackboardVariable>)null);
 			
 			Assert.That(blackboard.VariableCount, Is.EqualTo(0));
 			
@@ -59,7 +59,7 @@ namespace DTech.Blackboard.Tests.EditorMode
 			var var2 = new BlackboardVariable<string> { Name = "Name", Value = "Player" };
 			var variables = new List<BlackboardVariable> { var1, var2 };
 			
-			var blackboard = new Blackboard(variables);
+			var blackboard = new RuntimeBlackboard(variables);
 			
 			Assert.That(blackboard.VariableCount, Is.EqualTo(2));
 			Assert.That(blackboard.TryGetVariable("Health", out BlackboardVariable found1), Is.True);

@@ -9,12 +9,12 @@ namespace DTech.Blackboard.Tests.Performance
     [TestFixture]
     internal sealed class BlackboardMemoryAllocationTests
     {
-        private Blackboard _blackboard;
+        private RuntimeBlackboard _blackboard;
 
         [SetUp]
         public void SetUp()
         {
-            _blackboard = new Blackboard();
+            _blackboard = new RuntimeBlackboard();
             LogAssert.ignoreFailingMessages = true;
         }
 
@@ -205,7 +205,7 @@ namespace DTech.Blackboard.Tests.Performance
         {
             Measure.Method(() =>
                 {
-                    var blackboard = new Blackboard(100);
+                    var blackboard = new RuntimeBlackboard(100);
                     blackboard.Dispose();
                 })
                 .WarmupCount(10)
@@ -226,7 +226,7 @@ namespace DTech.Blackboard.Tests.Performance
 
             Measure.Method(() =>
                 {
-                    var blackboard = new Blackboard(variables);
+                    var blackboard = new RuntimeBlackboard(variables);
                     blackboard.Dispose();
                 })
                 .WarmupCount(10)

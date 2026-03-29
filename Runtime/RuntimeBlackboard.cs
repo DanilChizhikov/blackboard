@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace DTech.Blackboard
 {
-    public sealed class Blackboard : IDisposable
+    public sealed class RuntimeBlackboard : IDisposable
     {
         private readonly BlackboardVariableHolder _holder;
         
@@ -12,7 +12,7 @@ namespace DTech.Blackboard
         /// </summary>
         public int VariableCount => _holder.Count;
 
-        public Blackboard(IEnumerable<BlackboardVariable> variables)
+        public RuntimeBlackboard(IEnumerable<BlackboardVariable> variables)
         {
             if (variables == null)
             {
@@ -24,12 +24,12 @@ namespace DTech.Blackboard
             }
         }
 
-        public Blackboard(int capacity)
+        public RuntimeBlackboard(int capacity)
         {
             _holder = new BlackboardVariableHolder(capacity);
         }
 
-        public Blackboard()
+        public RuntimeBlackboard()
         {
             _holder = new BlackboardVariableHolder();
         }

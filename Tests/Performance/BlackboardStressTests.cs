@@ -10,12 +10,12 @@ namespace DTech.Blackboard.Tests.Performance
     [TestFixture]
     internal sealed class BlackboardStressTests
     {
-        private Blackboard _blackboard;
+        private RuntimeBlackboard _blackboard;
 
         [SetUp]
         public void SetUp()
         {
-            _blackboard = new Blackboard();
+            _blackboard = new RuntimeBlackboard();
             LogAssert.ignoreFailingMessages = true;
         }
 
@@ -133,13 +133,13 @@ namespace DTech.Blackboard.Tests.Performance
         [Test, Performance]
         public void StressTest_BlackboardCreation_Performance()
         {
-            var blackboards = new List<Blackboard>(100);
+            var blackboards = new List<RuntimeBlackboard>(100);
 
             Measure.Method(() =>
                 {
                     for (int i = 0; i < 100; i++)
                     {
-                        blackboards.Add(new Blackboard(50));
+                        blackboards.Add(new RuntimeBlackboard(50));
                     }
 
                     foreach (var blackboard in blackboards)
@@ -161,7 +161,7 @@ namespace DTech.Blackboard.Tests.Performance
         {
             Measure.Method(() =>
                 {
-                    using (var blackboard = new Blackboard())
+                    using (var blackboard = new RuntimeBlackboard())
                     {
                         for (int i = 0; i < 100; i++)
                         {
