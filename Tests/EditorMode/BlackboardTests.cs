@@ -616,7 +616,7 @@ namespace DTech.Blackboard.Tests.EditorMode
 			int callCount = 0;
 			variable.OnValueChanged += (_, _) => callCount++;
 
-			_blackboard.SetValueWithoutNotif("Health", 20);
+			_blackboard.SetValueWithoutNotify("Health", 20);
 
 			Assert.That(variable.Value, Is.EqualTo(20));
 			Assert.That(callCount, Is.EqualTo(0));
@@ -650,7 +650,7 @@ namespace DTech.Blackboard.Tests.EditorMode
 			int callCount = 0;
 			variable.OnValueChanged += (_, _) => callCount++;
 
-			_blackboard.SetValueWithoutNotif(variable.Guid, 40);
+			_blackboard.SetValueWithoutNotify(variable.Guid, 40);
 
 			Assert.That(variable.Value, Is.EqualTo(40));
 			Assert.That(callCount, Is.EqualTo(0));

@@ -71,7 +71,7 @@ namespace DTech.Blackboard.Editor
 		private static bool OpenEditorWindow(int instanceID)
 		{
 			string assetPath = AssetDatabase.GetAssetPath(instanceID);
-			var blackboardAsset = (BlackboardAsset)AssetDatabase.LoadAssetAtPath<Object>(assetPath);
+			var blackboardAsset = AssetDatabase.LoadAssetAtPath<BlackboardAsset>(assetPath);
 			if (blackboardAsset != null)
 			{
 				BlackboardEditorWindow.ShowWindow(blackboardAsset);
