@@ -20,14 +20,13 @@ It supports:
 - [Settings](#settings)
 - [Usage](#usage)
   - [Create and Populate a Runtime Blackboard](#create-and-populate-a-runtime-blackboard)
-  - [Get and Set Values with Extensions](#get-and-set-values-with-extensions)
+  - [Get and Set Values](#get-and-set-values)
   - [Use BlackboardAsset and Convert to Runtime](#use-blackboardasset-and-convert-to-runtime)
   - [Enable Custom Enum Types](#enable-custom-enum-types)
 - [API Reference](#api-reference)
   - [Blackboard](#blackboard)
   - [BlackboardVariable and BlackboardVariableT](#blackboardvariable-and-blackboardvariablet)
   - [BlackboardAsset](#blackboardasset)
-  - [BlackboardExtensions](#blackboardextensions)
   - [BlackboardEnumAttribute](#blackboardenumattribute)
 - [Dependencies](#dependencies)
 - [License](#license)
@@ -118,7 +117,7 @@ public static class BlackboardExample
 }
 ```
 
-### Get and Set Values with Extensions
+### Get and Set Values
 ```csharp
 using DTech.Blackboard;
 
@@ -133,7 +132,7 @@ public static class BlackboardReadWriteExample
         blackboard.SetValue("Health", health - 10);
         
         // Typed set without notification
-        blackboard.SetValueWithoutNotif("Health", health);
+        blackboard.SetValueWithoutNotify("Health", health);
 
         // Try-get for safe access
         if (blackboard.TryGetVariable<float>("MoveSpeed", out BlackboardVariable<float> speedVar))
@@ -206,6 +205,19 @@ public sealed class Blackboard : IDisposable
     public bool TryGetVariable(SerializableGuid guid, out BlackboardVariable variable);
     public bool TryGetVariable<T>(SerializableGuid guid, out BlackboardVariable<T> variable);
 
+    public BlackboardVariable GetVariable(string name);
+    public BlackboardVariable GetVariable(SerializableGuid guid);
+    public BlackboardVariable<T> GetVariable<T>(string name);
+    public BlackboardVariable<T> GetVariable<T>(SerializableGuid guid);
+
+    public T GetValue<T>(string name);
+    public T GetValue<T>(SerializableGuid guid);
+
+    public void SetValue<T>(string name, T value);
+    public void SetValueWithoutNotify<T>(string name, T value);
+    public void SetValue<T>(SerializableGuid guid, T value);
+    public void SetValueWithoutNotify<T>(SerializableGuid guid, T value);
+
     public int GetVariablesNonAlloc(BlackboardVariable[] variables);
 
     public void Dispose();
@@ -231,8 +243,8 @@ public abstract class BlackboardVariable
 public class BlackboardVariable<T> : BlackboardVariable
 {
     public event Action<SerializableGuid, T> OnValueChanged;
-    public T Value { get; set; }
-    public void SetValueWithoutNotif(T value);
+    public virtual T Value { get; set; }
+    public virtual void SetValueWithoutNotif(T value);
 }
 ```
 
@@ -259,32 +271,11 @@ public sealed partial class BlackboardAsset
 #endif
 ```
 
-### BlackboardExtensions
-Convenience extension methods for read/write operations.
-
-```csharp
-public static class BlackboardExtensions
-{
-    public static BlackboardVariable GetVariable(this Blackboard blackboard, string name);
-    public static BlackboardVariable GetVariable(this Blackboard blackboard, SerializableGuid guid);
-    public static BlackboardVariable<T> GetVariable<T>(this Blackboard blackboard, string name);
-    public static BlackboardVariable<T> GetVariable<T>(this Blackboard blackboard, SerializableGuid guid);
-
-    public static T GetValue<T>(this Blackboard blackboard, string name);
-    public static T GetValue<T>(this Blackboard blackboard, SerializableGuid guid);
-
-    public static void SetValue<T>(this Blackboard blackboard, string name, T value);
-    public static void SetValueWithoutNotif<T>(this Blackboard blackboard, string name, T value);
-    public static void SetValue<T>(this Blackboard blackboard, SerializableGuid guid, T value);
-    public static void SetValueWithoutNotif<T>(this Blackboard blackboard, SerializableGuid guid, T value);
-}
-```
-
 Notification behavior example:
 
 ```csharp
 blackboard.SetValue("Health", 90); // invokes BlackboardVariable<int>.OnValueChanged
-blackboard.SetValueWithoutNotif("Health", 90); // updates value without notification
+blackboard.SetValueWithoutNotify("Health", 90); // updates value without notification
 ```
 
 ### BlackboardEnumAttribute

@@ -1,7 +1,7 @@
 {
     "name": "com.dtech.blackboard",
     "displayName": "Blackboard - Typed Variable System",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "unity": "6000.0",
     "description": "Typed blackboard variable system for Unity with ScriptableObject authoring and runtime access by name or GUID.",
     "changelogUrl": "https://github.com/DanilChizhikov/blackboard/releases/tag/v0.0.1",
