@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.1.1] - 2026-03-29
+
+### Changed
+- Renamed `Blackboard` class to `RuntimeBlackboard` to better distinguish from the overall concept/package name
+- Updated all documentation and code examples to reflect the new class name
+
 ## [1.1.0] - 2026-03-29
 
 ### Added
