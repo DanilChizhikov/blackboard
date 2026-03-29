@@ -3,7 +3,20 @@
 ![Unity Tests](https://github.com/DanilChizhikov/blackboard/actions/workflows/tests.yml/badge.svg?branch=master)
 
 ## Overview
-Blackboard is a lightweight typed key-value container for Unity gameplay systems.
+Blackboard is a lightweight typed key-value container designed for Unity gameplay systems.
+
+It solves the common problem of sharing and managing game state between different systems (AI, animation, UI, etc.) without tight coupling.
+
+Think of it as a shared data space where:
+- An AI system writes the current `AIState` to the blackboard
+- An animation system reads that state to pick the right animation
+- The UI displays the same values without direct references to either system
+
+**Common use cases:**
+- **AI behavior trees**: Share perception data, target references, and state between nodes
+- **Animation systems**: Bridge gameplay values (speed, health) to animator parameters
+- **Cutscenes/sequencing**: Pass actor references and scene data to timeline tracks
+- **Gameplay state**: Centralize character stats, quest progress, or match state
 
 It supports:
 - runtime storage and retrieval by variable name or GUID,
@@ -20,15 +33,16 @@ It supports:
 - [Settings](#settings)
 - [Usage](#usage)
   - [Create and Populate a Runtime Blackboard](#create-and-populate-a-runtime-blackboard)
-  - [Get and Set Values with Extensions](#get-and-set-values-with-extensions)
+  - [Get and Set Values](#get-and-set-values)
   - [Use BlackboardAsset and Convert to Runtime](#use-blackboardasset-and-convert-to-runtime)
   - [Enable Custom Enum Types](#enable-custom-enum-types)
+  - [Enable Custom Types](#enable-custom-types)
 - [API Reference](#api-reference)
   - [Blackboard](#blackboard)
   - [BlackboardVariable and BlackboardVariableT](#blackboardvariable-and-blackboardvariablet)
   - [BlackboardAsset](#blackboardasset)
-  - [BlackboardExtensions](#blackboardextensions)
   - [BlackboardEnumAttribute](#blackboardenumattribute)
+  - [BlackboardCategoryAttribute](#blackboardcategoryattribute)
 - [Dependencies](#dependencies)
 - [License](#license)
 
@@ -118,7 +132,7 @@ public static class BlackboardExample
 }
 ```
 
-### Get and Set Values with Extensions
+### Get and Set Values
 ```csharp
 using DTech.Blackboard;
 
@@ -133,7 +147,7 @@ public static class BlackboardReadWriteExample
         blackboard.SetValue("Health", health - 10);
         
         // Typed set without notification
-        blackboard.SetValueWithoutNotif("Health", health);
+        blackboard.SetValueWithoutNotify("Health", health);
 
         // Try-get for safe access
         if (blackboard.TryGetVariable<float>("MoveSpeed", out BlackboardVariable<float> speedVar))
@@ -180,6 +194,29 @@ public enum AIState
 }
 ```
 
+### Enable Custom Types
+Mark classes or structs with `[BlackboardCategory]` to make them available in the Blackboard type picker. Use the path parameter to organize types into custom categories.
+
+```csharp
+using DTech.Blackboard;
+
+[BlackboardCategory("Gameplay/Stats")]
+[Serializable]
+public class CharacterStats
+{
+    public int Health;
+    public int Mana;
+}
+
+[BlackboardCategory]
+[Serializable]
+public struct PlayerData
+{
+    public string PlayerName;
+    public int Level;
+}
+```
+
 ## API Reference
 This section covers the main public types.
 
@@ -206,6 +243,19 @@ public sealed class Blackboard : IDisposable
     public bool TryGetVariable(SerializableGuid guid, out BlackboardVariable variable);
     public bool TryGetVariable<T>(SerializableGuid guid, out BlackboardVariable<T> variable);
 
+    public BlackboardVariable GetVariable(string name);
+    public BlackboardVariable GetVariable(SerializableGuid guid);
+    public BlackboardVariable<T> GetVariable<T>(string name);
+    public BlackboardVariable<T> GetVariable<T>(SerializableGuid guid);
+
+    public T GetValue<T>(string name);
+    public T GetValue<T>(SerializableGuid guid);
+
+    public void SetValue<T>(string name, T value);
+    public void SetValueWithoutNotify<T>(string name, T value);
+    public void SetValue<T>(SerializableGuid guid, T value);
+    public void SetValueWithoutNotify<T>(SerializableGuid guid, T value);
+
     public int GetVariablesNonAlloc(BlackboardVariable[] variables);
 
     public void Dispose();
@@ -231,8 +281,8 @@ public abstract class BlackboardVariable
 public class BlackboardVariable<T> : BlackboardVariable
 {
     public event Action<SerializableGuid, T> OnValueChanged;
-    public T Value { get; set; }
-    public void SetValueWithoutNotif(T value);
+    public virtual T Value { get; set; }
+    public virtual void SetValueWithoutNotif(T value);
 }
 ```
 
@@ -259,32 +309,11 @@ public sealed partial class BlackboardAsset
 #endif
 ```
 
-### BlackboardExtensions
-Convenience extension methods for read/write operations.
-
-```csharp
-public static class BlackboardExtensions
-{
-    public static BlackboardVariable GetVariable(this Blackboard blackboard, string name);
-    public static BlackboardVariable GetVariable(this Blackboard blackboard, SerializableGuid guid);
-    public static BlackboardVariable<T> GetVariable<T>(this Blackboard blackboard, string name);
-    public static BlackboardVariable<T> GetVariable<T>(this Blackboard blackboard, SerializableGuid guid);
-
-    public static T GetValue<T>(this Blackboard blackboard, string name);
-    public static T GetValue<T>(this Blackboard blackboard, SerializableGuid guid);
-
-    public static void SetValue<T>(this Blackboard blackboard, string name, T value);
-    public static void SetValueWithoutNotif<T>(this Blackboard blackboard, string name, T value);
-    public static void SetValue<T>(this Blackboard blackboard, SerializableGuid guid, T value);
-    public static void SetValueWithoutNotif<T>(this Blackboard blackboard, SerializableGuid guid, T value);
-}
-```
-
 Notification behavior example:
 
 ```csharp
 blackboard.SetValue("Health", 90); // invokes BlackboardVariable<int>.OnValueChanged
-blackboard.SetValueWithoutNotif("Health", 90); // updates value without notification
+blackboard.SetValueWithoutNotify("Health", 90); // updates value without notification
 ```
 
 ### BlackboardEnumAttribute
@@ -294,6 +323,20 @@ Marks enum types that should be available in Blackboard editor variable options.
 [AttributeUsage(AttributeTargets.Enum)]
 public sealed class BlackboardEnumAttribute : Attribute
 {
+}
+```
+
+### BlackboardCategoryAttribute
+Marks class or struct types that should be available in Blackboard editor variable options. Types must be marked with `[Serializable]` and can optionally specify a custom category path.
+
+```csharp
+[AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct)]
+public sealed class BlackboardCategoryAttribute : Attribute
+{
+    public string Path { get; }
+
+    public BlackboardCategoryAttribute();
+    public BlackboardCategoryAttribute(string path);
 }
 ```
 

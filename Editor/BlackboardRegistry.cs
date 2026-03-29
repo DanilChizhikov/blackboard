@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Audio;
@@ -77,22 +78,34 @@ namespace DTech.Blackboard.Editor
 			return enumOptions;
 		}
 
+		public static List<BlackboardVariableOption> GetBlackboardCategoryTypes()
+		{
+			var options = new List<BlackboardVariableOption>();
+			IEnumerable<Type> types = TypeCache.GetTypesWithAttribute<BlackboardCategoryAttribute>()
+				.Where(type => !type.IsAbstract && !type.IsInterface && type.GetCustomAttribute<SerializableAttribute>() != null);
+			
+			foreach (Type type in types)
+			{
+				var attribute = type.GetCustomAttribute<BlackboardCategoryAttribute>();
+				string path = string.IsNullOrEmpty(attribute.Path) ? $"Other/{type.FullName.Replace(".", "/")}" : $"{attribute.Path}/{type.Name}";
+				options.Add(new BlackboardVariableOption(type, path, "cs Script Icon"));
+			}
+			
+			return options;
+		}
+
 		public static List<BlackboardVariableOption> GetStoryVariableTypes()
 		{
 			List<BlackboardVariableOption> options = GetDefaultBlackboardOptions();
 			List<BlackboardVariableOption> enums = GetEnumVariableTypes();
+			List<BlackboardVariableOption> categories = GetBlackboardCategoryTypes();
 
 			AddCustomTypes<Component>(options, "Other/Components", "cs Script Icon");
 			AddCustomTypes<ScriptableObject>(options, "Other/ScriptableObjects", "ScriptableObject Icon");
 
 			options.AddRange(enums);
+			options.AddRange(categories);
 
-			return options;
-		}
-
-		public static List<BlackboardVariableOption> GetStoryVariableTypesWithOperators()
-		{
-			List<BlackboardVariableOption> options = GetStoryVariableTypes();
 			return options;
 		}
         
