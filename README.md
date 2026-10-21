@@ -66,7 +66,7 @@ It supports:
 
 To pin a specific release tag, use `v*.*.*`:
 
-`https://github.com/DanilChizhikov/blackboard.git#v1.0.0`
+`https://github.com/DanilChizhikov/blackboard.git#v1.1.2`
 
 ## Features
 - **Typed variables**
@@ -292,7 +292,7 @@ ScriptableObject-based authoring container.
 ```csharp
 public sealed partial class BlackboardAsset : ScriptableObject
 {
-    public Blackboard ToRuntimeBlackboard();
+    public RuntimeBlackboard ToRuntimeBlackboard();
 }
 ```
 

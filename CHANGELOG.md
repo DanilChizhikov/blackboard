@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.2] - 2026-10-21
+
+### Fixed
+- `SerializableGuid.GetHashCode` mixed only the first half of the guid, so guids that differ only in the second half collided
+- `RuntimeBlackboard.TryGetVariable<T>` could throw `InvalidCastException` on a type mismatch instead of returning `false`
+- Empty name guards used `string.IsNullOrWhiteSpace` on an already normalized name; they now use `string.IsNullOrEmpty`
+
 ## [1.1.1] - 2026-03-29
 
 ### Changed
