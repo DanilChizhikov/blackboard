@@ -25,7 +25,7 @@ namespace DTech.Blackboard
             out string errorMessage)
         {
             normalizedName = Normalize(variableName);
-            if (string.IsNullOrWhiteSpace(normalizedName))
+            if (string.IsNullOrEmpty(normalizedName))
             {
                 errorMessage = EmptyVariableNameError;
                 return false;
