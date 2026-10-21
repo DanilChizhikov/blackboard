@@ -62,7 +62,7 @@ namespace DTech.Blackboard
         public bool Contains(string name)
         {
             string normalizedName = BlackboardVariableNameValidator.Normalize(name);
-            if (string.IsNullOrWhiteSpace(normalizedName))
+            if (string.IsNullOrEmpty(normalizedName))
             {
                 return false;
             }
@@ -147,7 +147,7 @@ namespace DTech.Blackboard
         {
             variable = null;
             string normalizedName = BlackboardVariableNameValidator.Normalize(name);
-            if (string.IsNullOrWhiteSpace(normalizedName))
+            if (string.IsNullOrEmpty(normalizedName))
             {
                 return false;
             }
@@ -175,7 +175,7 @@ namespace DTech.Blackboard
         {
             variable = null;
             string normalizedName = BlackboardVariableNameValidator.Normalize(name);
-            if (string.IsNullOrWhiteSpace(normalizedName))
+            if (string.IsNullOrEmpty(normalizedName))
             {
                 return false;
             }
@@ -224,7 +224,7 @@ namespace DTech.Blackboard
             out string errorMessage)
         {
             normalizedName = BlackboardVariableNameValidator.Normalize(variableName);
-            if (string.IsNullOrWhiteSpace(normalizedName))
+            if (string.IsNullOrEmpty(normalizedName))
             {
                 errorMessage = "Variable name cannot be empty.";
                 return false;

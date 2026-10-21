@@ -102,7 +102,7 @@ namespace DTech.Blackboard
         {
             unchecked
             {
-                return (_value0.GetHashCode() * 397) ^ _value0.GetHashCode();
+                return (_value0.GetHashCode() * 397) ^ _value1.GetHashCode();
             }
         }
     }

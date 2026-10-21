@@ -133,8 +133,13 @@ namespace DTech.Blackboard
                 return false;
             }
 
-            variable = cachedVariable.ValueType.IsAssignableFrom(typeof(T)) ? (BlackboardVariable<T>)cachedVariable : null;
-            return variable != null;
+            if (cachedVariable is BlackboardVariable<T> typedVariable)
+            {
+                variable = typedVariable;
+                return true;
+            }
+
+            return false;
         }
         
         /// <summary>
@@ -163,8 +168,13 @@ namespace DTech.Blackboard
                 return false;
             }
 
-            variable = cachedVariable.ValueType.IsAssignableFrom(typeof(T)) ? (BlackboardVariable<T>)cachedVariable : null;
-            return variable != null;
+            if (cachedVariable is BlackboardVariable<T> typedVariable)
+            {
+                variable = typedVariable;
+                return true;
+            }
+
+            return false;
         }
         
         /// <summary>
